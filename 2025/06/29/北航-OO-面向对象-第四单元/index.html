@@ -1,0 +1,306 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>北航 OO 面向对象 第四单元 | lucky-sheltered-boy's blog</title><meta name="author" content="Jiyuan Zhao"><meta name="copyright" content="Jiyuan Zhao"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="转眼间，这趟面向对象程序设计的奇幻漂流也迎来了尾声。从第一单元初入茅庐的“表达式解析”，到第二单元扑朔迷离的“多线程电梯风云录”，再到第三单元严谨到令人发指的“JML”，直至本单元的图书馆怪谈“UML”，我历经了风雨的洗礼，变得更强、更稳、更有经验了。这篇博客是对第四单元和整个OO旅程的一次深度复盘与未来展望。   ✨ 我的OO航海日志·珍藏版索引 ✨   第一站：表达式求导的OO启蒙——递归下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="北航 OO 面向对象 第四单元">
+<meta property="og:url" content="http://example.com/2025/06/29/%E5%8C%97%E8%88%AA-OO-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1-%E7%AC%AC%E5%9B%9B%E5%8D%95%E5%85%83/index.html">
+<meta property="og:site_name" content="lucky-sheltered-boy&#39;s blog">
+<meta property="og:description" content="转眼间，这趟面向对象程序设计的奇幻漂流也迎来了尾声。从第一单元初入茅庐的“表达式解析”，到第二单元扑朔迷离的“多线程电梯风云录”，再到第三单元严谨到令人发指的“JML”，直至本单元的图书馆怪谈“UML”，我历经了风雨的洗礼，变得更强、更稳、更有经验了。这篇博客是对第四单元和整个OO旅程的一次深度复盘与未来展望。   ✨ 我的OO航海日志·珍藏版索引 ✨   第一站：表达式求导的OO启蒙——递归下">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/butterfly-icon.png">
+<meta property="article:published_time" content="2025-06-29T13:12:08.000Z">
+<meta property="article:modified_time" content="2025-06-29T13:30:24.085Z">
+<meta property="article:author" content="Jiyuan Zhao">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "北航 OO 面向对象 第四单元",
+  "url": "http://example.com/2025/06/29/%E5%8C%97%E8%88%AA-OO-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1-%E7%AC%AC%E5%9B%9B%E5%8D%95%E5%85%83/",
+  "image": "http://example.com/img/butterfly-icon.png",
+  "datePublished": "2025-06-29T13:12:08.000Z",
+  "dateModified": "2025-06-29T13:30:24.085Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Jiyuan Zhao",
+      "url": "http://example.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/06/29/%E5%8C%97%E8%88%AA-OO-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1-%E7%AC%AC%E5%9B%9B%E5%8D%95%E5%85%83/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '北航 OO 面向对象 第四单元',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">lucky-sheltered-boy's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">北航 OO 面向对象 第四单元</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">北航 OO 面向对象 第四单元</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-06-29T13:12:08.000Z" title="Created 2025-06-29 21:12:08">2025-06-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-06-29T13:30:24.085Z" title="Updated 2025-06-29 21:30:24">2025-06-29</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>转眼间，这趟面向对象程序设计的奇幻漂流也迎来了尾声。从第一单元初入茅庐的“表达式解析”，到第二单元扑朔迷离的“多线程电梯风云录”，再到第三单元严谨到令人发指的“JML”，直至本单元的图书馆怪谈“UML”，我历经了风雨的洗礼，变得更强、更稳、更有经验了。这篇博客是对第四单元和整个OO旅程的一次<strong>深度复盘</strong>与<strong>未来展望</strong>。</p>
+</blockquote>
+<hr>
+<p>✨ <strong>我的OO航海日志·珍藏版索引</strong> ✨</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://bbs.csdn.net/topics/619722645"> <strong>第一站：表达式求导的OO启蒙——递归下降与多项式的爱恨情仇</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://bbs.csdn.net/topics/619687202"> <strong>第二站：多线程电梯与并发设计的狂想曲——锁与调度的极致拉扯</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://bbs.csdn.net/topics/619644726"> <strong>第三站：JML规格与社交网络图的精妙构建——在规格的镣铐中起舞</strong></a></li>
+</ul>
+<hr>
+<h2 id="一、本单元所实践的正向建模与开发"><a href="#一、本单元所实践的正向建模与开发" class="headerlink" title="一、本单元所实践的正向建模与开发"></a>一、本单元所实践的正向建模与开发</h2><p>第四单元主要是设计UML图，并利用画好的UML图来实现一个图书馆管理系统。其中，我们应当采取正向建模的方式来完成作业。</p>
+<p>**正向建模的核心奥义：<mark>“先有蓝图，再盖大楼”</mark>，在本单元的图书馆建设中体现得淋漓尽致：</p>
+<ol>
+<li><p><strong>解读指导书内容</strong>:</p>
+<ul>
+<li>首先，要得把图书馆的规则理解透彻：书籍如何分类、学生如何借阅、预约、还书，信用分又是如何计算的，以及图书馆每日开闭馆时那套庄严的仪式（<code>open()</code> 和 <code>close()</code>）。</li>
+<li>比如要先吃透指导书的内容，明确我们的需求是什么，之后才能准确的设计类和方法。<strong>这部分对应了在实际工程中理解用户需求的部分。</strong></li>
+</ul>
+</li>
+<li><p><strong>绘制UML</strong>:</p>
+<ul>
+<li><code>MainClass</code>: 我的总指挥部，负责接收用户输入的指令，并精准分发给下级单位。</li>
+<li><code>Library</code>: <strong>系统的中枢神经</strong>！它像一位运筹帷幄的馆长，封装了图书馆几乎所有的核心业务逻辑，协调着手下各个“部门”高效运转。</li>
+<li><code>Book</code>: 每一本书都封装了它的ISBN、独一无二的副本ID、当前位置、迁移记录、预约对象，还有各种日期戳以及是否“逾期”的标志位。</li>
+<li><code>BookShelf</code>: 我的书库，不仅要按ID索引每一本实体书，还要按ISBN管理好各类书的可用副本集合，以及还要处理预约请求列表和馆内的人气王。</li>
+<li><code>AppointmentOffice</code>: 预约管理中心，核心就是 <code>appointedBooks</code> 集合，专门预约好的书籍，还得处理好预约书的“保质期”问题。</li>
+<li><code>BorrowReturnOffice</code>: 图书借还的“中转站”，一个简单的 <code>books</code> 集合，用于临时存放那些已经归还的书籍。       </li>
+<li><code>UserTable</code>: 学生档案管理处，通过好几个 <code>HashMap</code> (<code>userListB</code>, <code>userListC</code>, <code>userOrder</code>, <code>userCredit</code>) 精细入微地管理着每位学生的借书情况（B类、C类书的限制可不一样）、预约状态和信用分。</li>
+<li><code>ReadingRoom</code>: 阅览室，通过 <code>readingBooks</code> (学生ID -&gt; 书籍) 管理着室内的图书。</li>
+<li><code>Appointment</code>: 一个二元组，记录着学生ID和他们预约的图书ISBN。</li>
+</ul>
+</li>
+<li><p><strong>依据UML进行代码实现</strong>:</p>
+<ul>
+<li>所有具体的指令处理逻辑，比如学生要借书 (<code>userBorrowBook</code>)、还书 (<code>userReturnBook</code>)，或是图书馆每日的开门 (<code>open</code>)、闭门 (<code>close</code>) 等，都是在我们的<code>Library</code>类中，通过操作我们预先定义好的这些模型对象（<code>BookShelf</code>的实例、<code>UserTable</code>的实例等）来完成的。</li>
+<li>举个栗子，当一个借书请求输入，<code>Library</code>会先问问<code>BookShelf</code>书库：“这本书还有存货吗？”，再查查<code>UserTable</code>档案：“这位同学借书资格如何？信用分够不够哇？”，一切妥当后，才会更新<code>Book</code>的状态，并在<code>UserTable</code>中为这位同学记录。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="二、本单元作业的架构设计，对比分析最终的代码设计和UML模型设计之间的追踪关系"><a href="#二、本单元作业的架构设计，对比分析最终的代码设计和UML模型设计之间的追踪关系" class="headerlink" title="二、本单元作业的架构设计，对比分析最终的代码设计和UML模型设计之间的追踪关系"></a>二、本单元作业的架构设计，对比分析最终的代码设计和UML模型设计之间的追踪关系</h2><h3 id="1-我的图书馆系统架构蓝图"><a href="#1-我的图书馆系统架构蓝图" class="headerlink" title="1. 我的图书馆系统架构蓝图"></a>1. 我的图书馆系统架构蓝图</h3><p>我的图书馆系统，核心当属 <code>Library</code> 类，它统一调度和管理着图书馆内部的各个功能组件。下面是我的架构分层解析：</p>
+<ul>
+<li><p>**<code>MainClass</code> ：</p>
+<ul>
+<li>职责：从官方指定的<code>SCANNER</code>那里接收各种输入。</li>
+<li>行动：根据类型 (<code>LibraryOpenCmd</code>, <code>LibraryCloseCmd</code>, <code>LibraryReqCmd</code>等)，精准地调用对应执行方法。</li>
+<li>定位：典型的<strong>控制器</strong>角色，负责将外部的原始输入，转化为对核心业务逻辑的优雅调用。</li>
+</ul>
+</li>
+<li><p>**<code>Library</code> ：</p>
+<ul>
+<li>几乎所有核心的业务操作方法，如 <code>userBorrowBook</code>, <code>userReturnBook</code>, <code>userOrderBook</code>, <code>open</code>, <code>close</code>, <code>queryCreditScore</code> 等，都由它调用。</li>
+<li><strong>聚合众“部门”</strong>:<ul>
+<li><code>bookshelf: BookShelf</code>: 掌管馆藏图书，提供图书的获取和归还接口。</li>
+<li><code>appointmentOffice: AppointmentOffice</code> : 处理预约图书的暂存和“待领取”状态。</li>
+<li><code>borrowReturnOffice: BorrowReturnOffice</code> : 作为图书归还后的“临时隔离区”。</li>
+<li><code>userTable: UserTable</code> ： 管理所有学生用户的信息、借阅历史、信用分等“机密档案”。</li>
+<li><code>readingRoom: ReadingRoom</code> : 维护阅览室内的图书秩序。</li>
+</ul>
+</li>
+<li><strong>开关门</strong>: <code>open()</code> 和 <code>close()</code> 方法不仅仅是开门关门那么简单，它们是图书馆运作状态转换的关键节点，负责执行每日的“清算”与“初始化”操作。</li>
+<li><strong>输出”</strong>: 通过课程组提供的<code>PRINTER</code>工具，向外界播报处理结果。</li>
+</ul>
+</li>
+<li><p>**功能组件层:</p>
+<ul>
+<li><code>BookShelf</code>: 内部通过 <code>books</code> (<code>HashMap&lt;String, Book&gt;</code>) 按书籍的唯一ID（type-uid-copyId字符串）索引所有物理副本，方便O(1)查找；同时通过 <code>bookList</code> (<code>HashMap&lt;String, HashSet&lt;Book&gt;&gt;</code>) 按ISBN字符串索引该ISBN下的所有可用副本集合，便于快速判断某种书是否有库存。还维护着一个 <code>appointments</code> (<code>ArrayList&lt;Appointment&gt;</code>) 列表，用于初步收集预约请求，以及一个 <code>hotBooks</code> (<code>HashSet&lt;Book&gt;</code>) 集合用于追踪热门书籍的原始ISBN。</li>
+<li><code>AppointmentOffice</code>: 核心数据结构是 <code>appointedBooks</code> (<code>HashSet&lt;Book&gt;</code>)，专门管理那些已经成功预约并分配到具体学生的书籍，还要负责检查和处理这些预约书是否过期失效。</li>
+<li><code>BorrowReturnOffice</code>: 结构相对简单，就是一个 <code>books</code> (<code>HashSet&lt;Book&gt;</code>)，作为归还书籍的临时存储空间。</li>
+<li><code>UserTable</code>: 通过多个精心设计的<code>HashMap</code> (<code>userListB</code>, <code>userListC</code>, <code>userOrder</code>, <code>userCredit</code>)，对每个学生的B类书（只能借一本）、C类书（同ISBN只能借一本）、是否有未处理的预约、以及信用分，都管理得井井有条。</li>
+<li><code>ReadingRoom</code>: 维护一个 <code>readingBooks</code> (<code>HashMap&lt;String, Book&gt;</code>)，键是学生ID，值是该学生正在阅览室阅读的书籍，确保一人一次只能在阅览室阅读一本书。</li>
+</ul>
+</li>
+<li><p>**数据实体层 :</p>
+<ul>
+<li><code>Book</code>: <mark>绝对的核心数据对象</mark>。内部存储书籍需要记录的核心数据。</li>
+<li><code>Appointment</code>:记录着学生ID和他们想要预约的图书ISBN。</li>
+</ul>
+</li>
+</ul>
+<p>最后的UML类图如下：</p>
+<p><img src="/image-4.png" alt="alt text"></p>
+<h3 id="2-代码设计与我提供的UML模型之间的追踪关系"><a href="#2-代码设计与我提供的UML模型之间的追踪关系" class="headerlink" title="2. 代码设计与我提供的UML模型之间的追踪关系"></a>2. 代码设计与我提供的UML模型之间的追踪关系</h3><ul>
+<li><strong>Java类 &amp; UML类</strong>：我的每一个Java源文件，比如 <code>Library.java</code>, <code>Book.java</code>, <code>BookShelf.java</code> 等，在UML里都意义对应一个<code>&lt;UMLClassView&gt;</code>和一个<code>&lt;UMLClass&gt;</code>。</li>
+<li><strong>成员变量</strong>：每个类里的成员变量都与UML中的类的属性一一对应。包括可见性对应以及类型对应。比如 <code>private final BookShelf bookshelf</code>，在UML模型中就表现为 <code>Library</code> 类的一个属性。</li>
+<li><strong>类关系</strong>：每两个有关联关系的类在UML图中都有对应的compositon关联。</li>
+</ul>
+<p>通过UML建模实践，我总结了编码经验：<strong>优秀的面向对象设计代码</strong>要尽可能结构清晰、职责分明，这样它天然就易于被UML这样的标准化建模语言所精确地描述和表达。</p>
+<p>这充分说明了一个道理：UML模型，不仅仅可以在设计阶段充当指引我们编码的“蓝图”，也可以在代码完成后，作为一份精确、直观的“代码说明书”和“系统理解工具”。在我的第四单元图书馆系统中，代码和UML模型之间形成了一种非常理想的、相互印证、相互解释的良性循环。</p>
+<hr>
+<h2 id="三、大模型辅助架构设计"><a href="#三、大模型辅助架构设计" class="headerlink" title="三、大模型辅助架构设计"></a>三、大模型辅助架构设计</h2><p>**如何引导AI在复杂场景中正确理解题目需求:</p>
+<ol>
+<li><strong>“庖丁解牛”大法</strong>: <mark>千万别指望AI一次性设计整个复杂系统</mark>。那样它只会给你一些泛泛而谈的空话。要把大问题拆解成一个个可管理的小模块、小功能点。然后针对每个小点，向AI精准地“发问”或要求它给出具体方案。<ul>
+<li><mark>反面教材</mark>：“请帮我直接根据以上需求生成代码！” </li>
+<li><mark>正面引导</mark>：“假设你是图书管理员，我现在要设计图书馆的<code>UserTable</code>类，它的核心职责是管理学生用户的信息。具体来说，我需要它记录每个学生当前借了哪些书，还要记录他们当前是否有未处理的预约请求，以及他们的信用分。请你构思一下，这个<code>UserTable</code>类应该包含哪些核心的成员变量和关键的公开方法呢？”</li>
+</ul>
+</li>
+<li><strong>提供充足的“上下文信息”</strong> :<br>AI的智慧来源于它所“学习”到的数据。我们要想让它给出详细的架构设计，就得给它提供足够清晰、准确的背景资料和约束条件。<ul>
+<li><strong>提出新的需求</strong>：将现有的或者新的需求告诉AI，让AI充分学习新的规则。</li>
+<li><strong>反思回顾原有的背景</strong>: 我们需要让AI反思之前告诉他的信息，以及回顾AI之前生成的代码。</li>
+</ul>
+</li>
+<li><strong>“循循善诱”，实现迭代式进化”</strong>:<br><mark>不要期望一次提问就能得到完美答案</mark>。架构设计本身就是一个反复打磨、逐步求精的过程。<ul>
+<li>可以先从高层抽象入手，比如问AI：“一个图书馆系统，大致可以划分为哪些核心的功能模块或‘部门’呢？它们各自的主要职责是什么？” AI可能会给出类似<code>BookManagement</code>, <code>UserManagement</code>, <code>BorrowReturnProcess</code>这样的初步划分。</li>
+<li>然后，针对AI给出的每个模块（或者你自己构思的模块，比如<code>BookShelf</code>, <code>UserTable</code>等），再深入进去，和AI一起“头脑风暴”其内部应该采用什么样的数据结构，需要暴求疵”，发现其中可能存在的逻辑漏洞、性能瓶颈或与业务需求不符之处，然后提出具体的追问，要求AI澄清、改进或提供替代方案。比如，对于AI初步设计的<code>UserTable</code>，你可以追问：“如果一个学生同时借阅了多本C类书（但它们的ISBN各不相同），我该如何设计数据结构才能高效地管理和查询他所借的所有C类书呢？”</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="四、我的架构设计思维进化史"><a href="#四、我的架构设计思维进化史" class="headerlink" title="四、我的架构设计思维进化史"></a>四、我的架构设计思维进化史</h2><p>回顾这四个单元的OO奇幻漂流，我的架构设计思维可以说是从“青铜”一路打怪升级到“王者”的进化史。在写代码和debug中不断积累经验，之后再写代码就具备一些架构头脑了，能够判断出哪些架构适合该需求。</p>
+<ul>
+<li><strong>第一单元</strong>:<ul>
+<li><strong>我的架构</strong>：解析表达式主要依靠<strong>递归下降</strong>，将复杂的表达式递归地拆解为 <code>Expr</code> (表达式) -&gt; <code>Term</code> (项) -&gt; <code>Factor</code> (因子) 的清晰层次结构。这里的<code>Factor</code>，我设计成了一个接口，用它来统一管理不同种类的因此，包含了像<code>Num</code>, <code>Var</code>, <code>Sin</code>, <code>Cos</code>, <code>Function</code>, <code>Dx</code> 等不同类型的因子，让它们都能在<code>Factor</code>的容器中存储。而在计算上，我更是贯彻了“化繁为简，统一指挥”的战略思想：所有不同形态的因子，最终都要“殊途同归”，被转换为结构统一的<code>Poly</code> (多项式) 对象，然后在<code>Poly</code>的层面进行标准化的运算（加法、乘法、乘方）。这种“解析过程”与“计算过程”彻底分离**两段式架构设计，<strong>自底向上调用<code>toPoly()</code>方法</strong>的优雅转换思路，为我后续的系统扩展和功能迭代，打下了坚如磐石的基础。</li>
+</ul>
+</li>
+<li><strong>第二单元</strong>:<ul>
+<li><strong>核心挑战</strong>：如何在多线程并发访问共享资源时管理好线程安全问题；以及如何设计出一套既高效又聪明的电梯调度策略，让乘客们最快速度到达目标楼层。</li>
+<li><strong>我的架构</strong>：我引入了<strong>生产者-消费者模式</strong>。输入线程扮演着“生产者”，源源不断地将乘客请求放入<code>RequestList</code>这个“共享容器”。而我的<code>Dispatcher</code>则从容器中取出请求，并根据分派策略将其分配给各个电梯。电梯线程本身也是消费者，专注于处理分配到自己头上的那些请求。在调度策略上，我更是经历了从第一次作业的“简单粗暴”（直接指定电梯），到第二、三次作业的“精打细算”的调参算法（综合考虑电梯与请求者之间的距离、电梯当前“度量”、电梯的运行速度、乘客的“VIP等级”即优先级等多种因素，为每个电梯打出一个综合得分，优胜劣汰），可谓是不断追求卓越。电梯内部的运行逻辑，则遵循了高效的<code>LOOK</code>算法，并通过一个专门的<code>ElevatorStrategy</code>类进行了优雅的封装。</li>
+</ul>
+</li>
+<li><strong>第三单元</strong>:<ul>
+<li><strong>核心挑战</strong>：如何理解JML，并精确无误地实现一个复杂的社交网络系统，并且还要时刻避免一不小心就TLE的悲剧。</li>
+<li><strong>我的架构</strong>：架构设计主要是JML决定的。其中将社交网络抽象成一个图模型：<code>Person</code>对象是图中的“节点”，而人与人之间的<code>Relation</code>则是图中的“边”。整个单元的核心，就是<strong>一丝不苟地遵循JML规格文档，去精确实现每一个接口方法</strong>。同时还要估计搞复杂度方法的优化，比如对于那个看似简单的<code>query_triple_sum</code>，我通过在添加&#x2F;删除关系时<strong>动态维护一个<code>tripleSum</code>计数器变量</strong>，硬生生地将查询复杂度从O(N^3)优化到了惊人的O(1)！类似的，<code>query_couple_sum</code>也被我优化到了O(N)的遍历复杂度；而<code>query_value_sum</code>则采用了更复杂的动态维护策略，以均摊复杂度。甚至在处理<code>delete_article</code>时，我还深入比较了<code>LinkedList</code>与<code>ArrayList</code>在删除操作上的性能差异，并思考了使用自定义双向链表配合HashMap来实现理论最优O(1)删除的“终极方案”。</li>
+</ul>
+</li>
+<li><strong>第四单元</strong>:<ul>
+<li><strong>核心挑战</strong>：挑战新的项目设计逻辑：先画出UML图，再根据架构图实现代码。</li>
+<li><strong>我的架构</strong>：上文已经介绍的非常详尽了，这里就不过多赘述了。</li>
+</ul>
+</li>
+</ul>
+<p><strong>我在OO宇宙中的进化轨迹总结</strong>：</p>
+<p>在这一路上，我对面向对象的基石——抽象、封装、继承（虽然在本课程中，我更多地是通过接口来实现类似继承的多态效果，但其精髓是相通的！）、多态的理解，以及对诸如生产者-消费者、外观模式、策略模式、状态模式等常用设计模式的认知和应用能力，都在一次又一次的“被虐”与“反杀”的实战挑战中，不断深化、不断成熟，最终化为我代码功力的一部分。</p>
+<hr>
+<h2 id="五、我的测试思维进化论"><a href="#五、我的测试思维进化论" class="headerlink" title="五、我的测试思维进化论"></a>五、我的测试思维进化论</h2><ul>
+<li>我在四次作业中的测试都是通过<strong>评测机测试 + 手搓极端样例</strong>的方式实现的。</li>
+<li><strong>从第一次作业开始，我就使用评测机来进行代码测试</strong>。从手搓数据生成器，到书写多线程测试主程序，自己搓评测机的过程锻炼了我的代码能力，也让我多了解了程序评测机的基本逻辑和功能实现。</li>
+<li><strong>手搓极端样例的方式可以弥补评测机随机生成数据的不足和缺陷</strong>。一般来说评测机生成的数据都不会非常极端，比如连续10000条输入都是相同的。这也就说明评测机侧重的是测试的广度，而非深度。但是强测的数据点往往会侧重于考察某一个具体的漏洞，比如时间复杂度过高而引起的TLE等，这些极端数据评测机几乎不可能生成，因此必须手搓。手搓的方式就是识别程序中薄弱的地方和潜在的漏洞，然后自己构造一些卡时间的样例或者很复杂的情景，来测试自己程序的健康性。</li>
+</ul>
+<hr>
+<h2 id="六、我的OO课程通关感悟"><a href="#六、我的OO课程通关感悟" class="headerlink" title="六、我的OO课程通关感悟"></a>六、我的OO课程通关感悟</h2><p>当我敲下这篇总结博客的最后一个字符，也意味着我这趟面向对象程序设计之旅即将画上一个虽不舍但却圆满的句号。回首这四个单元的点点滴滴，OO带给我的，早已远远超出了Java语言本身和那几个具体的题目。这更像是一场思维模式的深度洗礼，一场解决复杂问题能力的系统重塑，一场让我窥见“代码之外星辰大海”的奇妙探险。</p>
+<p>最后，也是最重要的，我要由衷地感谢课程组的每一位老师和助教们！是你们的精心策划、巧妙设计和辛勤付出，才为我们呈现了这门如此富有挑战性与启发性的面向对象程序设计课程。虽然在这几个月里，我的生活常常因为赶OO的ddl，但是这门课所带给我的收获必将化为我未来在计算机科学的星辰大海中继续探索和遨游的坚实基础与不竭动力！</p>
+<p>OO的探险奇旅，至此已悄然驶向终点站。但，面向对象的思考方式与探索精神，永不落幕！</p>
+<p>Cheers to OO! 🍻 And may the Source (Code) be with you! 😉</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Jiyuan Zhao</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/06/29/%E5%8C%97%E8%88%AA-OO-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1-%E7%AC%AC%E5%9B%9B%E5%8D%95%E5%85%83/">http://example.com/2025/06/29/%E5%8C%97%E8%88%AA-OO-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1-%E7%AC%AC%E5%9B%9B%E5%8D%95%E5%85%83/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/06/29/%E5%8C%97%E8%88%AA-OO-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1-%E7%AC%AC%E4%B8%89%E5%8D%95%E5%85%83/" title="北航 OO 面向对象 第三单元"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">北航 OO 面向对象 第三单元</div></div><div class="info-2"><div class="info-item-1"> 本单元重点学习了JML规格代码的书写、阅读，以及体验规格化设计实现。本单元学习的内容可谓是金刚钻，也许将来在工作的时候不一定会用到，但是掌握一项高专业化的能力不是一件坏事，况且一旦用到了那我们便能得心应手的应对，因此也是要好好对待JML的！  1. 测试过程1.1 单元测试单元测试指的是，对软件中的函数、方法或类进行正确性验证。通过验证程序的函数是否正确，能够尽早发现代码逻辑错误，隔离缺陷，方便代码重构。单元测试过程自动化程度高，执行速度快，定位问题准确，成本最低。在我的程序中，我使用JUnit来进行单元测试，测试函数行为。 1.2 **功能测试功能测试是指，基于软件需求规格说明书对软件功能进行验证。关注“软件做什么”，而不是“怎么做”。主要以黑盒测试为主，根据需求文档设计测试用例。在自动化测试的同时也包含大量手动测试，需要手搓一些极端样例来保证代码在极端情况下的健壮性。在我的程序中，我手搓了很多极端数据来保证函数功能的正确实现。 1.3 集成测试...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Jiyuan Zhao</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%9C%AC%E5%8D%95%E5%85%83%E6%89%80%E5%AE%9E%E8%B7%B5%E7%9A%84%E6%AD%A3%E5%90%91%E5%BB%BA%E6%A8%A1%E4%B8%8E%E5%BC%80%E5%8F%91"><span class="toc-number">1.</span> <span class="toc-text">一、本单元所实践的正向建模与开发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%9C%AC%E5%8D%95%E5%85%83%E4%BD%9C%E4%B8%9A%E7%9A%84%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%EF%BC%8C%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90%E6%9C%80%E7%BB%88%E7%9A%84%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1%E5%92%8CUML%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BF%BD%E8%B8%AA%E5%85%B3%E7%B3%BB"><span class="toc-number">2.</span> <span class="toc-text">二、本单元作业的架构设计，对比分析最终的代码设计和UML模型设计之间的追踪关系</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%88%91%E7%9A%84%E5%9B%BE%E4%B9%A6%E9%A6%86%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E8%93%9D%E5%9B%BE"><span class="toc-number">2.1.</span> <span class="toc-text">1. 我的图书馆系统架构蓝图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%88%91%E6%8F%90%E4%BE%9B%E7%9A%84UML%E6%A8%A1%E5%9E%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BF%BD%E8%B8%AA%E5%85%B3%E7%B3%BB"><span class="toc-number">2.2.</span> <span class="toc-text">2. 代码设计与我提供的UML模型之间的追踪关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%BE%85%E5%8A%A9%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.</span> <span class="toc-text">三、大模型辅助架构设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%88%91%E7%9A%84%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%80%9D%E7%BB%B4%E8%BF%9B%E5%8C%96%E5%8F%B2"><span class="toc-number">4.</span> <span class="toc-text">四、我的架构设计思维进化史</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%88%91%E7%9A%84%E6%B5%8B%E8%AF%95%E6%80%9D%E7%BB%B4%E8%BF%9B%E5%8C%96%E8%AE%BA"><span class="toc-number">5.</span> <span class="toc-text">五、我的测试思维进化论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%88%91%E7%9A%84OO%E8%AF%BE%E7%A8%8B%E9%80%9A%E5%85%B3%E6%84%9F%E6%82%9F"><span class="toc-number">6.</span> <span class="toc-text">六、我的OO课程通关感悟</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/29/%E5%8C%97%E8%88%AA-OO-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1-%E7%AC%AC%E5%9B%9B%E5%8D%95%E5%85%83/" title="北航 OO 面向对象 第四单元">北航 OO 面向对象 第四单元</a><time datetime="2025-06-29T13:12:08.000Z" title="Created 2025-06-29 21:12:08">2025-06-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/29/%E5%8C%97%E8%88%AA-OO-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1-%E7%AC%AC%E4%B8%89%E5%8D%95%E5%85%83/" title="北航 OO 面向对象 第三单元">北航 OO 面向对象 第三单元</a><time datetime="2025-06-29T13:11:02.000Z" title="Created 2025-06-29 21:11:02">2025-06-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/29/OS-shell-%E6%8C%91%E6%88%98%E6%80%A7%E4%BB%BB%E5%8A%A1/" title="OS shell 挑战性任务">OS shell 挑战性任务</a><time datetime="2025-06-29T12:50:00.000Z" title="Created 2025-06-29 20:50:00">2025-06-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Jiyuan Zhao</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
