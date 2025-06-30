@@ -186,21 +186,21 @@
 </li>
 </ol>
 <h1 id="3-架构设计及图模型构建和维护策略"><a href="#3-架构设计及图模型构建和维护策略" class="headerlink" title="3. 架构设计及图模型构建和维护策略"></a>3. 架构设计及图模型构建和维护策略</h1><p>在本单元，我的代码架构如下图所示：  </p>
-<p><img src="/image.png" alt="alt text"></p>
+<p><img src="image.png" alt="alt text"></p>
 <p>重点在于根据JML规格来完成接口方法的实现，并采取高内聚-低耦合的原则来明确划分代码职责，每个类完成各自的任务，并相互配合关联。  </p>
 <p>在存储图的时候，<mark>我采用的是类似链表邻接表的形式</mark>。其中图的节点就是Person，而边则代表Person之间的Relation，边的权重就是Value。在每个Person中，我采用了HashMap来存储与该Person有关系的Acquaintance，其中因为network中出现的任何person的id都是唯一的，因此可以用person的id作为键值，而person的引用作为映射，从而可以根据id来O(1)查找对应的acquaintance。<br>在维护图的时候，主要是根据一些能够改变person之间关系的方法来去维护。比如在addRelation的时候，需要在acquaintance中增加新person的映射关系，或者在modifyRelation的时候来修改value值或者取消映射关系。  </p>
 <p>几乎所有的维护工作都是在增加、减少、修改这三种操作的时候进行的，因此在考虑维护图的时候，也是先找出所有会增加、减少、修改关系的方法，然后在这些方法执行过程中去维护图的关系。  </p>
 <h1 id="4-性能分析"><a href="#4-性能分析" class="headerlink" title="4. 性能分析"></a>4. 性能分析</h1><p>在本次作业中，有多个方法可能会出现因实现复杂度过高而导致的性能问题，必须加以优化，否则可能会超时。这里我将列举一些有必要的优化，来帮助大家体会思考优化的过程。  </p>
 <h4 id="4-1-query-triple-sum-优化"><a href="#4-1-query-triple-sum-优化" class="headerlink" title="4.1 query_triple_sum 优化"></a>4.1 query_triple_sum 优化</h4><p>在第一次作业中，出现了一个看起来很简单，但实际上需要认真优化的方法：</p>
-<p><img src="/image-1.png" alt="alt text"></p>
+<p><img src="image-1.png" alt="alt text"></p>
 <p>该方法的JML规格写的非常简单，但是暗藏玄机。如果我们真的按照JML的引导，通过三层for循环来实现该方法，那么复杂度将会是O(n^3)，在强测一万条指令的狂轰滥炸下，这肯定会超时的。因此我们需要巧妙地进行维护，来使得查询复杂度是O(1)，维护复杂度是O(n)，这样做可以把复杂度均摊到每一步方法中，而不是集中堆叠在某一个方法中。</p>
 <p>具体来说，我们可以维护一个tripleSum，这样每次查询只需要返回该值即可。维护的过程也很简单：注意到，三元环的形成需要先有两条边相交，然后补齐第三条边，因此我们在每次补齐边的时候，可以遍历两个节点，看看这两个person有没有相同的acquaintance，如果有，那么就会多一个三元环。在删除关系的时候也同理，看看删除关系的两个person是否有相同的acquaintance，如果有那么就少一个三元环。</p>
 <h4 id="4-2-query-couple-sum-优化"><a href="#4-2-query-couple-sum-优化" class="headerlink" title="4.2 query_couple_sum 优化"></a>4.2 query_couple_sum 优化</h4><p>在第二次作业中，出现了qcs这个方法。该方法的JML规格如下：</p>
-<p><img src="/image-2.png" alt="alt text"></p>
+<p><img src="image-2.png" alt="alt text"></p>
 <p>如果无脑按照JML规格去实现，用两层for循环遍历，那么复杂度将会是O(n^2)，由于该方法还要调用queryBestAcquaintance，因此在极端情况下也会变成O(n^3)，因此需要对该方法进行优化。</p>
 <p>注意到该方法主要是寻找两个人，这两个人的qba是彼此，因此我们不用遍历所有的两人组合，只需要对每个人遍历，看看这个人的qba的qba是否是他自己即可。这样就把复杂度优化到了O(n)，然后对qba采取维护的方式，这样就可以用O(1)复杂度来查询qba，有效降低了时间复杂度。</p>
 <h4 id="4-3-query-value-sum-优化"><a href="#4-3-query-value-sum-优化" class="headerlink" title="4.3 query_value_sum 优化"></a>4.3 query_value_sum 优化</h4><p>在第二次作业中，还有一个大头优化，那就是qvs。该方法的JML规格如下图所示：</p>
-<p><img src="/image-3.png" alt="alt text"></p>
+<p><img src="image-3.png" alt="alt text"></p>
 <p>该方法最直观的方式就是两层for循环遍历，如果两个person之间isLinked是true，那么就加上value。也可以理解为，将所有彼此isLinked的person的value加两遍。不过目前该方法的复杂度是O(n^2)，如果不优化那么很大概率会TLE。</p>
 <p>一种简单的优化方案是遍历边复杂度，也就是第一层for训练遍历tag中的所有person，第二层for循环遍历每个person的acquaintance并检查其是否也在tag中。这种方式巧妙地把复杂度降低成了边复杂度，在person之间关系不多的时候可以很大幅度优化时间。不过这种方式在评测机压力过大的时候仍然会TLE。</p>
 <p>所以最稳妥的方式还是采取维护的策略。首先，当tag中加入person或者删除person时，需要遍历tag中与该person有isLinked关系的person，并加上或减去两倍的value。其次，当有两个person之间的关系发生变动时，包括addRelation和modifyRelation，都需要找到同时含有这两个person的tag并进行value变动的维护。</p>
