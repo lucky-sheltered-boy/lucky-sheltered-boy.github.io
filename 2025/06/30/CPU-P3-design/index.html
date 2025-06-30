@@ -370,13 +370,13 @@
 <td align="center">[31:0]</td>
 </tr>
 </tbody></table>
-<h3 id="因此可设计如下PC状态机："><a href="#因此可设计如下PC状态机：" class="headerlink" title="因此可设计如下PC状态机："></a>因此可设计如下PC状态机：</h3><p><img src="/07f14f64a1db155afead97371e8172d.png" alt="alt text"></p>
-<h3 id="其中PCshift模块为："><a href="#其中PCshift模块为：" class="headerlink" title="其中PCshift模块为："></a>其中PCshift模块为：</h3><p><img src="/80885f2a7fdbb17a126ed74a5f4af7b.png" alt="alt text"></p>
+<h3 id="因此可设计如下PC状态机："><a href="#因此可设计如下PC状态机：" class="headerlink" title="因此可设计如下PC状态机："></a>因此可设计如下PC状态机：</h3><p><img src="07f14f64a1db155afead97371e8172d.png" alt="alt text"></p>
+<h3 id="其中PCshift模块为："><a href="#其中PCshift模块为：" class="headerlink" title="其中PCshift模块为："></a>其中PCshift模块为：</h3><p><img src="80885f2a7fdbb17a126ed74a5f4af7b.png" alt="alt text"></p>
 <p><strong>需要注意，因为PC实际是从0x00003000开始的，而ROM是从0x00000000开始的，因此二者有插值。在获取PC值的时候，需要加上初始地址0x00003000</strong></p>
 <h1 id="4-设计splitter"><a href="#4-设计splitter" class="headerlink" title="4. 设计splitter"></a>4. 设计splitter</h1><ul>
 <li>根据不同指令从对应位数拆分出相关信息，用于后续操作。</li>
 </ul>
-<p><img src="/21d42a09c8443fced31562d565c985e.png" alt="alt text"></p>
+<p><img src="21d42a09c8443fced31562d565c985e.png" alt="alt text"></p>
 <h1 id="5-设计ALU"><a href="#5-设计ALU" class="headerlink" title="5. 设计ALU"></a>5. 设计ALU</h1><h3 id="ALU端口设计："><a href="#ALU端口设计：" class="headerlink" title="ALU端口设计："></a>ALU端口设计：</h3><table>
 <thead>
 <tr>
@@ -438,7 +438,7 @@
 <td align="center">大于</td>
 </tr>
 </tbody></table>
-<h3 id="ALU实现电路："><a href="#ALU实现电路：" class="headerlink" title="ALU实现电路："></a>ALU实现电路：</h3><p><img src="/4b2f67627254f828510a00340b4e4d5.png" alt="alt text"></p>
+<h3 id="ALU实现电路："><a href="#ALU实现电路：" class="headerlink" title="ALU实现电路："></a>ALU实现电路：</h3><p><img src="4b2f67627254f828510a00340b4e4d5.png" alt="alt text"></p>
 <h1 id="6-CU"><a href="#6-CU" class="headerlink" title="6. CU"></a>6. CU</h1><h3 id="端口设计："><a href="#端口设计：" class="headerlink" title="端口设计："></a>端口设计：</h3><table>
 <thead>
 <tr>
@@ -510,9 +510,9 @@
 </tr>
 </tbody></table>
 <ul>
-<li>内部电路采用最小项表达式判断法，先判断Op，再判断Func<br><img src="/7a58a7231680b093b7121e6b404d678.png" alt="alt text"></li>
-<li>之后根据每种指令对应的输出来用或逻辑接线。<br><img src="/761ba2735cbea0b555e852b9d42e2d5.png" alt="alt text"></li>
-<li>对于ALUop的判断，再次采用最小项表达式的方法。<br><img src="/f7eaf24d608e99cfd72d185c239d672.png" alt="alt text"></li>
+<li>内部电路采用最小项表达式判断法，先判断Op，再判断Func<br><img src="7a58a7231680b093b7121e6b404d678.png" alt="alt text"></li>
+<li>之后根据每种指令对应的输出来用或逻辑接线。<br><img src="761ba2735cbea0b555e852b9d42e2d5.png" alt="alt text"></li>
+<li>对于ALUop的判断，再次采用最小项表达式的方法。<br><img src="f7eaf24d608e99cfd72d185c239d672.png" alt="alt text"></li>
 </ul>
 <h1 id="7-Extender"><a href="#7-Extender" class="headerlink" title="7. Extender"></a>7. Extender</h1><p>端口类型：</p>
 <table>
@@ -568,15 +568,15 @@
 <td align="center"></td>
 </tr>
 <tr>
-<td align="center"><img src="/ab168230aa6fd5765c7c7bba5351e4c.png" alt="alt text"></td>
+<td align="center"><img src="ab168230aa6fd5765c7c7bba5351e4c.png" alt="alt text"></td>
 <td align="center"></td>
 </tr>
 </tbody></table>
 <h1 id="8-控制信号操作电路"><a href="#8-控制信号操作电路" class="headerlink" title="8. 控制信号操作电路"></a>8. 控制信号操作电路</h1><ul>
-<li>凭借splitter提供的寄存器信息、立即数信息，和CU提供的控制信号，我们可以组合连接GRF与RAM，以达到完成指令操作的效果。<br><img src="/3a54bacbecdae20a779b22d3238b7d4.png" alt="alt text"></li>
+<li>凭借splitter提供的寄存器信息、立即数信息，和CU提供的控制信号，我们可以组合连接GRF与RAM，以达到完成指令操作的效果。<br><img src="3a54bacbecdae20a779b22d3238b7d4.png" alt="alt text"></li>
 <li>通过CU的控制信号来决定MUX的输出是什么，从而特性化处理不同指令的要求。</li>
 </ul>
-<h1 id="9-输出"><a href="#9-输出" class="headerlink" title="9. 输出"></a>9. 输出</h1><p><img src="/9cc7cc795eeeb138592cb68279baaed.png" alt="alt text"><br>通过tunnel获取相应输出的结果，并从端口输出。(PC要加上初始地址)</p>
+<h1 id="9-输出"><a href="#9-输出" class="headerlink" title="9. 输出"></a>9. 输出</h1><p><img src="9cc7cc795eeeb138592cb68279baaed.png" alt="alt text"><br>通过tunnel获取相应输出的结果，并从端口输出。(PC要加上初始地址)</p>
 <h1 id="10-测试方案"><a href="#10-测试方案" class="headerlink" title="10. 测试方案"></a>10. 测试方案</h1><ol>
 <li>理论检验。一个个指令单独检测，从CU产生的控制信号，到这些控制信号实际所控制的内容，分别进行检查核对，确保指令正确执行。</li>
 <li>数据检验。利用教程平台提供的机器码，导入ROM中运行CPU，通过翻译机器码获取MIPS指令，并利用MARS计算出正确结果，与CPU中的GRF和RAM核对信息。</li>
@@ -584,7 +584,7 @@
 <h1 id="11-思考题"><a href="#11-思考题" class="headerlink" title="11. 思考题"></a>11. 思考题</h1><ol>
 <li>CPU中有两个FSM。一个是由PC和PCop组成的FSM，是一个Moore状态机，输出是当前PC所对应的指令机器码；另一个是GRF和RAM与Splitter和CU组成的FSM，是一个Mealy状态机，输出是众多信号。PC、GRF、RAM起到状态存储功能，PCshifter、ALU、Extender实现状态转移功能(即计算出下一状态)。</li>
 <li>我认为比较合理。ROM是只读寄存器，不可修改，其存储的是指令的机器码，而程序指令一经写好就是固定的，因此可以应用。GRF是寄存器堆，用来对应32个寄存器，能起到数据存储的作用，我认为也比较合理。RAM是随机访存寄存器，且读出和写入操作分离，满足内存中访问和存储的操作，因此也合理。但也有一些问题，比如 $sp寄存器是栈指针，其初始值并不是0，而是一个地址。进行入栈操作时会先 $sp自减4字节，之后再在内存中 $sp的位置存储数据。而寄存器默认初始值是0，因此需要注意特殊寄存器赋初值的问题。</li>
-<li>除了教程中提及的模块，我还设计了PCshifter模块，其作用是根据PC和PCop来计算出下一周期的PC。利用PCop当MUX的sel信号，根据PCop的不同，决定不同的PC输出<img src="/df0b89c25261476827243e17d41a76f.png" alt="alt text"></li>
+<li>除了教程中提及的模块，我还设计了PCshifter模块，其作用是根据PC和PCop来计算出下一周期的PC。利用PCop当MUX的sel信号，根据PCop的不同，决定不同的PC输出<img src="df0b89c25261476827243e17d41a76f.png" alt="alt text"></li>
 <li>nop的作用是让当前电路不发生任何改变。当CU中不设计nop指令时，出现nop指令后CU所有控制信号都是0，包括Regwrite和Menwrite，此时不会对GRF和RAM进行任何改变，满足nop指令的作用，因此不需要设计。</li>
 <li>该测试样例的覆盖率和强度都较高，但是对于特定样例、边界情况的测试还有些不足。<br>ori指令：应该增加立即数的符号位是1的测试样例，以判断是否是无符号扩展。<br>lui指令：测试较为全面<br>add指令：应增加溢出情况测试<br>sw指令：应增加对某一地址重复赋值的测试，应变换寄存器中的值测试偏移量<br>lw指令：应变换寄存器中的值测试偏移量<br>beq指令：应增加label是beq指令的下一条指令的跳转，测试跳转情况下PC是否+4再偏移。</li>
 </ol>
