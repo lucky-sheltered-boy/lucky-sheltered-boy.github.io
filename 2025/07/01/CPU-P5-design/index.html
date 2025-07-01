@@ -1,0 +1,988 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>CPU_P5_design | lucky-sheltered-boy's Blog</title><meta name="author" content="Jiyuan Zhao"><meta name="copyright" content="Jiyuan Zhao"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. 分析指令集 经过分类，指令共包含R型指令和I型指令 列出其对应的32位机器码，寻找共性差异  R型指令：   Type Op Rs Rt Rd Shamt Func 解释    add 000000 (5) (5) (5) 00000 100000 相加(rs+rt-&gt;rd)   sub 000000 (5) (5) (5) 00000 100010 相减(rs-rt-&gt;rd)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CPU_P5_design">
+<meta property="og:url" content="http://example.com/2025/07/01/CPU-P5-design/index.html">
+<meta property="og:site_name" content="lucky-sheltered-boy&#39;s Blog">
+<meta property="og:description" content="1. 分析指令集 经过分类，指令共包含R型指令和I型指令 列出其对应的32位机器码，寻找共性差异  R型指令：   Type Op Rs Rt Rd Shamt Func 解释    add 000000 (5) (5) (5) 00000 100000 相加(rs+rt-&gt;rd)   sub 000000 (5) (5) (5) 00000 100010 相减(rs-rt-&gt;rd)">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover3.jpg">
+<meta property="article:published_time" content="2025-07-01T04:51:41.000Z">
+<meta property="article:modified_time" content="2025-07-01T15:29:25.887Z">
+<meta property="article:author" content="Jiyuan Zhao">
+<meta property="article:tag" content="Verilog">
+<meta property="article:tag" content="CPU">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover3.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "CPU_P5_design",
+  "url": "http://example.com/2025/07/01/CPU-P5-design/",
+  "image": "https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover3.jpg",
+  "datePublished": "2025-07-01T04:51:41.000Z",
+  "dateModified": "2025-07-01T15:29:25.887Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Jiyuan Zhao",
+      "url": "http://example.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/07/01/CPU-P5-design/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CPU_P5_design',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/%E5%BE%AE%E4%BF%A1%E5%A4%B4%E5%83%8F.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">7</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover3.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">lucky-sheltered-boy's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">CPU_P5_design</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">CPU_P5_design</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-07-01T04:51:41.000Z" title="Created 2025-07-01 12:51:41">2025-07-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-07-01T15:29:25.887Z" title="Updated 2025-07-01 23:29:25">2025-07-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">计算机组成原理</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>7mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="1-分析指令集"><a href="#1-分析指令集" class="headerlink" title="1. 分析指令集"></a>1. 分析指令集</h1><ul>
+<li>经过分类，指令共包含R型指令和I型指令</li>
+<li>列出其对应的32位机器码，寻找共性差异</li>
+</ul>
+<h2 id="R型指令："><a href="#R型指令：" class="headerlink" title="R型指令："></a>R型指令：</h2><table>
+<thead>
+<tr>
+<th align="center">Type</th>
+<th align="center">Op</th>
+<th align="center">Rs</th>
+<th align="center">Rt</th>
+<th align="center">Rd</th>
+<th align="center">Shamt</th>
+<th align="center">Func</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">add</td>
+<td align="center">000000</td>
+<td align="center">(5)</td>
+<td align="center">(5)</td>
+<td align="center">(5)</td>
+<td align="center">00000</td>
+<td align="center">100000</td>
+<td>相加(rs+rt-&gt;rd)</td>
+</tr>
+<tr>
+<td align="center">sub</td>
+<td align="center">000000</td>
+<td align="center">(5)</td>
+<td align="center">(5)</td>
+<td align="center">(5)</td>
+<td align="center">00000</td>
+<td align="center">100010</td>
+<td>相减(rs-rt-&gt;rd)</td>
+</tr>
+</tbody></table>
+<h2 id="I型指令："><a href="#I型指令：" class="headerlink" title="I型指令："></a>I型指令：</h2><table>
+<thead>
+<tr>
+<th align="center">Type</th>
+<th align="center">Op</th>
+<th align="center">Rs</th>
+<th align="center">Rt</th>
+<th align="center">Immediate</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ori</td>
+<td align="center">001101</td>
+<td align="center">(5)</td>
+<td align="center">(5)</td>
+<td align="center">(16)</td>
+<td>或运算(rs|immediate-&gt;rt)</td>
+</tr>
+<tr>
+<td align="center">lui</td>
+<td align="center">001111</td>
+<td align="center">00000</td>
+<td align="center">(5)</td>
+<td align="center">(16)</td>
+<td>立即数加载至高16位({immediate||{16{1’b0}}}-&gt;rt)</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">Type</th>
+<th align="center">Op</th>
+<th align="center">Rs</th>
+<th align="center">Rt</th>
+<th align="center">Offset</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">lw</td>
+<td align="center">100011</td>
+<td align="center">(5)</td>
+<td align="center">(5)</td>
+<td align="center">(16)</td>
+<td>加载字(rs+offset在memory中data-&gt;rt)</td>
+</tr>
+<tr>
+<td align="center">sw</td>
+<td align="center">101011</td>
+<td align="center">(5)</td>
+<td align="center">(5)</td>
+<td align="center">(16)</td>
+<td>保存字(rt-&gt;rs+offset在memory中的data)</td>
+</tr>
+<tr>
+<td align="center">beq</td>
+<td align="center">000100</td>
+<td align="center">(5)</td>
+<td align="center">(5)</td>
+<td align="center">(16)</td>
+<td>rs与rt相等则PC偏移offset*4</td>
+</tr>
+</tbody></table>
+<h2 id="J型指令"><a href="#J型指令" class="headerlink" title="J型指令"></a>J型指令</h2><table>
+<thead>
+<tr>
+<th align="center">type</th>
+<th align="center">Op</th>
+<th align="center">instr_index</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">jal</td>
+<td align="center">000011</td>
+<td align="center">(26)</td>
+<td>跳转至index并且PC+4 -&gt; $ra</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">type</th>
+<th align="center">Op</th>
+<th align="center">rs</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">func</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">jr</td>
+<td align="center">000000</td>
+<td align="center">(5)</td>
+<td align="center">{10{1’b0}}</td>
+<td align="center">{5{1’b0}}</td>
+<td align="center">001000</td>
+<td>跳转至$rs中的地址</td>
+</tr>
+</tbody></table>
+<h1 id="2-阶段分析"><a href="#2-阶段分析" class="headerlink" title="2. 阶段分析"></a>2. 阶段分析</h1><p><img src="/pictures/888df695e6b12d3c9ed7e9c5219360f.png" alt="alt text"><br>F阶段PC值已经确定，进行的是根据PC访存相应的Instruction操作。<strong>此时指令已经确定好了</strong><br>D阶段是将instruction转换成对应的操作数、产生控制信号。<br>E阶段是将操作数转换成计算结果。<br>M阶段是方寸数据内存。<br>W阶段是写入GRF。</p>
+<h1 id="3-命名规则"><a href="#3-命名规则" class="headerlink" title="3.命名规则"></a>3.命名规则</h1><p>采用首字母大写命名法，每个单词首字母大写。</p>
+<h1 id="4-PC设计"><a href="#4-PC设计" class="headerlink" title="4. PC设计"></a>4. PC设计</h1><p> 端口设计：</p>
+<table>
+<thead>
+<tr>
+<th align="center">方向</th>
+<th align="center">name</th>
+<th align="center">位宽</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">input</td>
+<td align="center">PcOp</td>
+<td align="center">[3:0]</td>
+</tr>
+<tr>
+<td align="center">input</td>
+<td align="center">BeqPc</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">input</td>
+<td align="center">JalPc</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">input</td>
+<td align="center">JrPc</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">input</td>
+<td align="center">reset</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">input</td>
+<td align="center">clk</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">Pc_F</td>
+<td align="center">[31:0]</td>
+</tr>
+</tbody></table>
+<p>转移设计：</p>
+<table>
+<thead>
+<tr>
+<th align="center">PcOp</th>
+<th align="center">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0000</td>
+<td align="center">Pc_F &lt;&#x3D; Pc_F + 4</td>
+</tr>
+<tr>
+<td align="center">0001</td>
+<td align="center">Pc_F &lt;&#x3D; BeqPc</td>
+</tr>
+<tr>
+<td align="center">0010</td>
+<td align="center">Pc_F &lt;&#x3D; JalPc</td>
+</tr>
+<tr>
+<td align="center">0011</td>
+<td align="center">Pc_F &lt;&#x3D; JrPc</td>
+</tr>
+</tbody></table>
+<h1 id="5-CU控制信号分析"><a href="#5-CU控制信号分析" class="headerlink" title="5. CU控制信号分析"></a>5. CU控制信号分析</h1><h3 id="端口设计："><a href="#端口设计：" class="headerlink" title="端口设计："></a>端口设计：</h3><table>
+<thead>
+<tr>
+<th align="center">type</th>
+<th align="center">name</th>
+<th align="center">位宽</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">input</td>
+<td align="center">Op</td>
+<td align="center">[5:0]</td>
+<td>机器码高6位</td>
+</tr>
+<tr>
+<td align="center">input</td>
+<td align="center">Func</td>
+<td align="center">[5:0]</td>
+<td>机器码低6位</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">RegDst</td>
+<td align="center">[1:0]</td>
+<td>GRF被写入寄存器是rt还是rd。0是rt，1是rd，10是$ra</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">AluSrc</td>
+<td align="center">[1:0]</td>
+<td>ALU第二个运算值是rt还是立即数。0是rt，1是立即数</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">MemToReg</td>
+<td align="center">[1:0]</td>
+<td>GRF写入值是ALUans还是DMans。0是ALUans，1是DMans，10是PC + 4</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">RegWrite</td>
+<td align="center">1</td>
+<td>是否写入GRF</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">MemWrite</td>
+<td align="center">1</td>
+<td>是否写入RAM</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">PcSel</td>
+<td align="center">[3:0]</td>
+<td>当前指令是否是beq\jal\jr</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">ExtOp</td>
+<td align="center">[7:0]</td>
+<td>扩展操作类型类型，详见Extender</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">AluOp</td>
+<td align="center">[7:0]</td>
+<td>ALU运算类型，详见ALU</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">InstrType</td>
+<td align="center">[7:0]</td>
+<td>指令类型</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">TNew_D</td>
+<td align="center">[3:0]</td>
+<td>从D级开始，经过多少周期该指令产生运算结果</td>
+</tr>
+<tr>
+<td align="center">output</td>
+<td align="center">TUse1_D,TUse2_D</td>
+<td align="center">[3:0]</td>
+<td>从D级开始，经过多少周期要用到运算结果</td>
+</tr>
+</tbody></table>
+<ul>
+<li>内部电路采用最小项表达式判断法，先判断Op，再判断Func</li>
+</ul>
+<p>每种指令所需控制信号：</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">RegDst</th>
+<th align="center">AluSrc</th>
+<th align="center">MemToReg</th>
+<th align="center">RegWrite</th>
+<th align="center">MemWrite</th>
+<th align="center">PcSel</th>
+<th align="center">ExtOp</th>
+<th align="center">AluOp</th>
+<th>TNew</th>
+<th>TUse1</th>
+<th>TUse2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">add</td>
+<td align="center">01</td>
+<td align="center">00</td>
+<td align="center">00</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0000</td>
+<td align="center"></td>
+<td align="center">ADD</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td align="center">sub</td>
+<td align="center">01</td>
+<td align="center">00</td>
+<td align="center">00</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0000</td>
+<td align="center"></td>
+<td align="center">SUB</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td align="center">ori</td>
+<td align="center">00</td>
+<td align="center">01</td>
+<td align="center">00</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0000</td>
+<td align="center">0000</td>
+<td align="center">OR</td>
+<td>2</td>
+<td>1</td>
+<td>10</td>
+</tr>
+<tr>
+<td align="center">lui</td>
+<td align="center">00</td>
+<td align="center">01</td>
+<td align="center">00</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0000</td>
+<td align="center">0010</td>
+<td align="center">ADD</td>
+<td>2</td>
+<td>10</td>
+<td>10</td>
+</tr>
+<tr>
+<td align="center">lw</td>
+<td align="center">00</td>
+<td align="center">01</td>
+<td align="center">01</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0000</td>
+<td align="center">0001</td>
+<td align="center">ADD</td>
+<td>3</td>
+<td>1</td>
+<td>10</td>
+</tr>
+<tr>
+<td align="center">sw</td>
+<td align="center">11</td>
+<td align="center">01</td>
+<td align="center"></td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0000</td>
+<td align="center">0001</td>
+<td align="center">ADD</td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td align="center">beq</td>
+<td align="center">11</td>
+<td align="center">00</td>
+<td align="center"></td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0001</td>
+<td align="center">0011</td>
+<td align="center">EQUAL</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td align="center">jal</td>
+<td align="center">10</td>
+<td align="center"></td>
+<td align="center">10</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0010</td>
+<td align="center">0100</td>
+<td align="center"></td>
+<td>0</td>
+<td>10</td>
+<td>10</td>
+</tr>
+<tr>
+<td align="center">jr</td>
+<td align="center">11</td>
+<td align="center">00</td>
+<td align="center"></td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0011</td>
+<td align="center"></td>
+<td align="center">ADD</td>
+<td>0</td>
+<td>0</td>
+<td>10</td>
+</tr>
+</tbody></table>
+<h1 id="6-流水线寄存器存储信息分析"><a href="#6-流水线寄存器存储信息分析" class="headerlink" title="6. 流水线寄存器存储信息分析"></a>6. 流水线寄存器存储信息分析</h1><h3 id="F级："><a href="#F级：" class="headerlink" title="F级："></a>F级：</h3><table>
+<thead>
+<tr>
+<th align="center">name</th>
+<th align="center">位宽</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Pc_F</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">Instruction_F</td>
+<td align="center">[31:0]</td>
+</tr>
+</tbody></table>
+<h3 id="D级："><a href="#D级：" class="headerlink" title="D级："></a>D级：</h3><table>
+<thead>
+<tr>
+<th align="center">name</th>
+<th align="center">位宽</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Pc_D</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">RD1_D</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">RD2_D</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">WR_D</td>
+<td align="center">[4:0]</td>
+</tr>
+<tr>
+<td align="center">ExtAns_D</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">MemToReg_D</td>
+<td align="center">[1:0]</td>
+</tr>
+<tr>
+<td align="center">RegWrite_D</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">AluSrc_D</td>
+<td align="center">[1:0]</td>
+</tr>
+<tr>
+<td align="center">MemWrite_D</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">AluOp_D</td>
+<td align="center">[7:0]</td>
+</tr>
+<tr>
+<td align="center">InstrType_D</td>
+<td align="center">[7:0]</td>
+</tr>
+<tr>
+<td align="center">TNew_D</td>
+<td align="center">[7:0]</td>
+</tr>
+<tr>
+<td align="center">Addr1_D</td>
+<td align="center">[4:0]</td>
+</tr>
+<tr>
+<td align="center">Addr2_D</td>
+<td align="center">[4:0]</td>
+</tr>
+</tbody></table>
+<h3 id="E级："><a href="#E级：" class="headerlink" title="E级："></a>E级：</h3><table>
+<thead>
+<tr>
+<th align="center">name</th>
+<th align="center">位宽</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Pc_E</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">AluAns_E</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">WR_E</td>
+<td align="center">[4:0]</td>
+</tr>
+<tr>
+<td align="center">RD2_E</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">MemToReg_E</td>
+<td align="center">[1:0]</td>
+</tr>
+<tr>
+<td align="center">RegWrite_E</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">MemWrite_E</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">InstrType_E</td>
+<td align="center">[7:0]</td>
+</tr>
+<tr>
+<td align="center">TNew_E</td>
+<td align="center">[7:0]</td>
+</tr>
+<tr>
+<td align="center">Addr2_E</td>
+<td align="center">[4:0]</td>
+</tr>
+</tbody></table>
+<h3 id="M级："><a href="#M级：" class="headerlink" title="M级："></a>M级：</h3><table>
+<thead>
+<tr>
+<th align="center">name</th>
+<th align="center">位宽</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Pc_M</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">AluAns_M</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">WR_M</td>
+<td align="center">[4:0]</td>
+</tr>
+<tr>
+<td align="center">DmAns_M</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">MemToReg_M</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">RegWrite_M</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">InstrType_M</td>
+<td align="center">[7:0]</td>
+</tr>
+<tr>
+<td align="center">TNew_M</td>
+<td align="center">[7:0]</td>
+</tr>
+</tbody></table>
+<h3 id="W级："><a href="#W级：" class="headerlink" title="W级："></a>W级：</h3><table>
+<thead>
+<tr>
+<th align="center">name</th>
+<th align="center">位宽</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Pc_W</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">AluAns_W</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">WR_W</td>
+<td align="center">[4:0]</td>
+</tr>
+<tr>
+<td align="center">DmAns_W</td>
+<td align="center">[31:0]</td>
+</tr>
+<tr>
+<td align="center">MemToReg_W</td>
+<td align="center">[1:0]</td>
+</tr>
+<tr>
+<td align="center">RegWrite_W</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">InstrType_W</td>
+<td align="center">[7:0]</td>
+</tr>
+<tr>
+<td align="center">TNew_W</td>
+<td align="center">[7:0]</td>
+</tr>
+</tbody></table>
+<h1 id="7-流水线转发数据"><a href="#7-流水线转发数据" class="headerlink" title="7. 流水线转发数据"></a>7. 流水线转发数据</h1><h3 id="E级：-1"><a href="#E级：-1" class="headerlink" title="E级："></a>E级：</h3><table>
+<thead>
+<tr>
+<th align="center">instruction</th>
+<th align="center">Data_E</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">add</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">sub</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">ori</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">lui</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">beq</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">jal</td>
+<td align="center">Pc_E + 8</td>
+</tr>
+<tr>
+<td align="center">jr</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">lw</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">sw</td>
+<td align="center">0</td>
+</tr>
+</tbody></table>
+<h3 id="M级：-1"><a href="#M级：-1" class="headerlink" title="M级："></a>M级：</h3><table>
+<thead>
+<tr>
+<th align="center">instruction</th>
+<th align="center">Data_M</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">add</td>
+<td align="center">AluAns_M</td>
+</tr>
+<tr>
+<td align="center">sub</td>
+<td align="center">AluAns_M</td>
+</tr>
+<tr>
+<td align="center">ori</td>
+<td align="center">AluAns_M</td>
+</tr>
+<tr>
+<td align="center">lui</td>
+<td align="center">AluAns_M</td>
+</tr>
+<tr>
+<td align="center">beq</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">jal</td>
+<td align="center">Pc_M + 8</td>
+</tr>
+<tr>
+<td align="center">jr</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">lw</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">sw</td>
+<td align="center">0</td>
+</tr>
+</tbody></table>
+<h3 id="W级：-1"><a href="#W级：-1" class="headerlink" title="W级："></a>W级：</h3><table>
+<thead>
+<tr>
+<th align="center">instruction</th>
+<th align="center">Data_W</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">add</td>
+<td align="center">AluAns_W</td>
+</tr>
+<tr>
+<td align="center">sub</td>
+<td align="center">AluAns_W</td>
+</tr>
+<tr>
+<td align="center">ori</td>
+<td align="center">AluAns_W</td>
+</tr>
+<tr>
+<td align="center">lui</td>
+<td align="center">AluAns_W</td>
+</tr>
+<tr>
+<td align="center">beq</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">jal</td>
+<td align="center">Pc_W + 8</td>
+</tr>
+<tr>
+<td align="center">jr</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">lw</td>
+<td align="center">DmAns_W</td>
+</tr>
+<tr>
+<td align="center">sw</td>
+<td align="center">0</td>
+</tr>
+</tbody></table>
+<h1 id="8-测试方案"><a href="#8-测试方案" class="headerlink" title="8. 测试方案"></a>8. 测试方案</h1><h4 id="1-数据通路测试：先不考虑转发和阻塞，单纯检验数据通路是否正确，为了避免冒险情况，相邻两个指令之间间隔三个nop指令。"><a href="#1-数据通路测试：先不考虑转发和阻塞，单纯检验数据通路是否正确，为了避免冒险情况，相邻两个指令之间间隔三个nop指令。" class="headerlink" title="1. 数据通路测试：先不考虑转发和阻塞，单纯检验数据通路是否正确，为了避免冒险情况，相邻两个指令之间间隔三个nop指令。"></a>1. 数据通路测试：先不考虑转发和阻塞，单纯检验数据通路是否正确，为了避免冒险情况，相邻两个指令之间间隔三个nop指令。</h4><p><img src="/pictures/ea18bc7fef45d031c01125d4f954bc5.png"></p>
+<p><img src="/pictures/3cc02e3e2c5554e03be5d6c21c9611a.png"></p>
+<p><img src="/pictures/d566ff89e1b755e36c04faba2d7e924.png"></p>
+<h4 id="2-转发阻塞测试：测试连续访存的指令，跳转指令，与MARS行为对应。"><a href="#2-转发阻塞测试：测试连续访存的指令，跳转指令，与MARS行为对应。" class="headerlink" title="2. 转发阻塞测试：测试连续访存的指令，跳转指令，与MARS行为对应。"></a>2. 转发阻塞测试：测试连续访存的指令，跳转指令，与MARS行为对应。</h4><h1 id="9-思考题"><a href="#9-思考题" class="headerlink" title="9. 思考题"></a>9. 思考题</h1><ol>
+<li>原因：我们跳转指令的判断在D级进行，但实际上是在D级的最后进行的。在此之前，我们需要完成指令译码、产生控制信号、阻塞判断、GRF读取、转发判断等操作，之后再依据跳转指令类型决定后续操作(beq：判断两个寄存器值是否相等；jal：立即数位扩展；jr：$rs寄存器的值)。这些前置步骤会消耗一定的时间，导致最后剩余给跳转判断的时间很紧张，容易产生数据冒险，使跳转判断不准确，因此并非总能提高效率。并且由于在D级就要使用数据，所以Tuse&#x3D;0，这使得如果要使用的数据还未被算出，则要阻塞很长时间，导致指令效率下降。<br>例子：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lui $t0 1</span><br><span class="line">sw $t0 0($0)</span><br><span class="line">lw $t1 0($0)</span><br><span class="line">beq $t1 $0 label</span><br><span class="line">label:</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>因为jal本意是PC跳转到标签处，并把当前指令的下一条要执行的指令存入$ra，当没有延迟槽的时候，当前指令的下一条指令就是PC + 4。而有延迟槽时，jal指令并不会立即跳转，而是会先执行PC + 4这条指令再跳转，因此真正的下一条要执行的指令是PC + 8。这样可以多执行一条指令，又不耽误之后的指令执行，提高指令执行效率。</li>
+<li>因为功能部件产生转发数据是需要时间的，如果我们使用功能部件产生的数据转发，那么之后我们还要用转发的数据再进行一些操作，这些操作挤占在一个时钟周期内反而会降低效率。如果我们使用流水寄存器的数据，我们可以在周期刚开始就获得转发数据，从而有充足的时间去进行后续操作。</li>
+<li>因为W级的数据会写入GRF,同时D级数据也会读取GRF。如果被写入数据和被读取数据是同一个，那么被读取的数据应该是写入的结果而不是原来的结果。此时可以用GRF内部转发解决问题。实现方式为：判断该寄存器是不是$0，如果是则为0，如果不是，判断写入寄存器和读取寄存器是否是同一个，如果是，则读取写入结果，否则读取原来寄存器的值。</li>
+<li>转发数据的需求者可能来自于D,E,M级，转发供给者可能来自于E,M,W级。转发数据通路有：D级接受E,M,W级的转发，E级接受M,W的转发，M级接受W级的转发。</li>
+<li>可能扩展ALU的运算类型，控制信号的类型，寄存器传递的控制信号的种类，阻塞条件等。</li>
+<li>我采用集中式译码器，在D级集中产生控制信号，并随着流水线传递控制信号。这种架构的好处是只需要一个译码器，只需要产生一次控制信号，进行一次状态判断。不足之处是流水线寄存器需要传递较多控制信号，操作量比较大，且修改需要一并修改后面的流水线寄存器。</li>
+<li>测试方案分为数据通路测试和转发阻塞测试。数据通路测试不涉及转发阻塞，单纯用来检测每一条指令能否正常执行，为了避免产生冒险，在编写测试代码的时候，相邻指令之间要相隔3-4个nop指令。测试转发和阻塞数据时，主要针对冒险情况来编写代码，可以列举哪些指令相邻出现需要转发或者阻塞，然后抽样测试，与MARS行为进行对照。</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Jiyuan Zhao</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/07/01/CPU-P5-design/">http://example.com/2025/07/01/CPU-P5-design/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Verilog/">Verilog</a><a class="post-meta__tags" href="/tags/CPU/">CPU</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover3.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/07/01/CPU-P4-design/" title="CPU_P4_design"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover2.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">CPU_P4_design</div></div><div class="info-2"><div class="info-item-1">1....</div></div></div></a><a class="pagination-related" href="/2025/07/01/CPU-P6-design/" title="CPU_P6_design"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover7.JPG" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">CPU_P6_design</div></div><div class="info-2"><div class="info-item-1">1. 分析指令集 经过分类，指令共包含R型指令和I型指令 列出其对应的32位机器码，寻找共性差异  R型指令：   Type Op Rs Rt Rd Shamt Func 解释    add 000000 (5) (5) (5) 00000 100000 相加(rs+rt-&gt;rd)   sub 000000 (5) (5) (5) 00000 100010 相减(rs-rt-&gt;rd)   and 000000 (5) (5) (5) 00000 100100 rs &amp; rt -&gt; rd   or 000000 (5) (5) (5) 00000 100101 rs | rt -&gt; rd   slt 000000 (5) (5) (5) 00000 101010 rs &lt; rt ? 1 : 0(signed)   sltu 000000 (5) (5) (5) 00000 101011 rs &lt; rt ? 1 : 0(unsigned)   mfhi 000000 00000 00000 (5) 00000 010000 HI...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/06/30/CPU-P3-design/" title="CPU_P3_design"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover4.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-30</div><div class="info-item-2">CPU_P3_design</div></div><div class="info-2"><div class="info-item-1">1....</div></div></div></a><a class="pagination-related" href="/2025/07/01/CPU-P4-design/" title="CPU_P4_design"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover2.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-01</div><div class="info-item-2">CPU_P4_design</div></div><div class="info-2"><div class="info-item-1">1....</div></div></div></a><a class="pagination-related" href="/2025/07/01/CPU-P6-design/" title="CPU_P6_design"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover7.JPG" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-01</div><div class="info-item-2">CPU_P6_design</div></div><div class="info-2"><div class="info-item-1">1. 分析指令集 经过分类，指令共包含R型指令和I型指令 列出其对应的32位机器码，寻找共性差异  R型指令：   Type Op Rs Rt Rd Shamt Func 解释    add 000000 (5) (5) (5) 00000 100000 相加(rs+rt-&gt;rd)   sub 000000 (5) (5) (5) 00000 100010 相减(rs-rt-&gt;rd)   and 000000 (5) (5) (5) 00000 100100 rs &amp; rt -&gt; rd   or 000000 (5) (5) (5) 00000 100101 rs | rt -&gt; rd   slt 000000 (5) (5) (5) 00000 101010 rs &lt; rt ? 1 : 0(signed)   sltu 000000 (5) (5) (5) 00000 101011 rs &lt; rt ? 1 : 0(unsigned)   mfhi 000000 00000 00000 (5) 00000 010000 HI...</div></div></div></a><a class="pagination-related" href="/2025/07/01/CPU-P7-design/" title="CPU_P7_design"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover4.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-01</div><div class="info-item-2">CPU_P7_design</div></div><div class="info-2"><div class="info-item-1">1. 分析指令集 经过分类，指令共包含R型指令和I型指令 列出其对应的32位机器码，寻找共性差异  R型指令：   Type Op Rs Rt Rd Shamt Func 解释    add 000000 (5) (5) (5) 00000 100000 相加(rs+rt-&gt;rd)   sub 000000 (5) (5) (5) 00000 100010 相减(rs-rt-&gt;rd)   and 000000 (5) (5) (5) 00000 100100 rs &amp; rt -&gt; rd   or 000000 (5) (5) (5) 00000 100101 rs | rt -&gt; rd   slt 000000 (5) (5) (5) 00000 101010 rs &lt; rt ? 1 : 0(signed)   sltu 000000 (5) (5) (5) 00000 101011 rs &lt; rt ? 1 : 0(unsigned)   mfhi 000000 00000 00000 (5) 00000 010000 HI...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/%E5%BE%AE%E4%BF%A1%E5%A4%B4%E5%83%8F.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Jiyuan Zhao</div><div class="author-info-description">这里是keshi的博客网站，联系作者：zhaojiyuan0721</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">7</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lucky-sheltered-boy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lucky-sheltered-boy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:23371524@buaa.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%88%86%E6%9E%90%E6%8C%87%E4%BB%A4%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">1. 分析指令集</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#R%E5%9E%8B%E6%8C%87%E4%BB%A4%EF%BC%9A"><span class="toc-number">1.1.</span> <span class="toc-text">R型指令：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#I%E5%9E%8B%E6%8C%87%E4%BB%A4%EF%BC%9A"><span class="toc-number">1.2.</span> <span class="toc-text">I型指令：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#J%E5%9E%8B%E6%8C%87%E4%BB%A4"><span class="toc-number">1.3.</span> <span class="toc-text">J型指令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E9%98%B6%E6%AE%B5%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">2. 阶段分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E5%91%BD%E5%90%8D%E8%A7%84%E5%88%99"><span class="toc-number">3.</span> <span class="toc-text">3.命名规则</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-PC%E8%AE%BE%E8%AE%A1"><span class="toc-number">4.</span> <span class="toc-text">4. PC设计</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-CU%E6%8E%A7%E5%88%B6%E4%BF%A1%E5%8F%B7%E5%88%86%E6%9E%90"><span class="toc-number">5.</span> <span class="toc-text">5. CU控制信号分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E8%AE%BE%E8%AE%A1%EF%BC%9A"><span class="toc-number">5.0.1.</span> <span class="toc-text">端口设计：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E5%AD%98%E5%82%A8%E4%BF%A1%E6%81%AF%E5%88%86%E6%9E%90"><span class="toc-number">6.</span> <span class="toc-text">6. 流水线寄存器存储信息分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#F%E7%BA%A7%EF%BC%9A"><span class="toc-number">6.0.1.</span> <span class="toc-text">F级：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#D%E7%BA%A7%EF%BC%9A"><span class="toc-number">6.0.2.</span> <span class="toc-text">D级：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#E%E7%BA%A7%EF%BC%9A"><span class="toc-number">6.0.3.</span> <span class="toc-text">E级：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#M%E7%BA%A7%EF%BC%9A"><span class="toc-number">6.0.4.</span> <span class="toc-text">M级：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#W%E7%BA%A7%EF%BC%9A"><span class="toc-number">6.0.5.</span> <span class="toc-text">W级：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%BD%AC%E5%8F%91%E6%95%B0%E6%8D%AE"><span class="toc-number">7.</span> <span class="toc-text">7. 流水线转发数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#E%E7%BA%A7%EF%BC%9A-1"><span class="toc-number">7.0.1.</span> <span class="toc-text">E级：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#M%E7%BA%A7%EF%BC%9A-1"><span class="toc-number">7.0.2.</span> <span class="toc-text">M级：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#W%E7%BA%A7%EF%BC%9A-1"><span class="toc-number">7.0.3.</span> <span class="toc-text">W级：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-%E6%B5%8B%E8%AF%95%E6%96%B9%E6%A1%88"><span class="toc-number">8.</span> <span class="toc-text">8. 测试方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF%E6%B5%8B%E8%AF%95%EF%BC%9A%E5%85%88%E4%B8%8D%E8%80%83%E8%99%91%E8%BD%AC%E5%8F%91%E5%92%8C%E9%98%BB%E5%A1%9E%EF%BC%8C%E5%8D%95%E7%BA%AF%E6%A3%80%E9%AA%8C%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF%E6%98%AF%E5%90%A6%E6%AD%A3%E7%A1%AE%EF%BC%8C%E4%B8%BA%E4%BA%86%E9%81%BF%E5%85%8D%E5%86%92%E9%99%A9%E6%83%85%E5%86%B5%EF%BC%8C%E7%9B%B8%E9%82%BB%E4%B8%A4%E4%B8%AA%E6%8C%87%E4%BB%A4%E4%B9%8B%E9%97%B4%E9%97%B4%E9%9A%94%E4%B8%89%E4%B8%AAnop%E6%8C%87%E4%BB%A4%E3%80%82"><span class="toc-number">8.0.0.1.</span> <span class="toc-text">1. 数据通路测试：先不考虑转发和阻塞，单纯检验数据通路是否正确，为了避免冒险情况，相邻两个指令之间间隔三个nop指令。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E8%BD%AC%E5%8F%91%E9%98%BB%E5%A1%9E%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%B5%8B%E8%AF%95%E8%BF%9E%E7%BB%AD%E8%AE%BF%E5%AD%98%E7%9A%84%E6%8C%87%E4%BB%A4%EF%BC%8C%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4%EF%BC%8C%E4%B8%8EMARS%E8%A1%8C%E4%B8%BA%E5%AF%B9%E5%BA%94%E3%80%82"><span class="toc-number">8.0.0.2.</span> <span class="toc-text">2. 转发阻塞测试：测试连续访存的指令，跳转指令，与MARS行为对应。</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#9-%E6%80%9D%E8%80%83%E9%A2%98"><span class="toc-number">9.</span> <span class="toc-text">9. 思考题</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/07/01/OS-lab6-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="OS_lab6_实验报告"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover8.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OS_lab6_实验报告"/></a><div class="content"><a class="title" href="/2025/07/01/OS-lab6-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="OS_lab6_实验报告">OS_lab6_实验报告</a><time datetime="2025-07-01T06:35:01.000Z" title="Created 2025-07-01 14:35:01">2025-07-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/01/OS-lab5-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="OS_lab5_实验报告"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover3.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OS_lab5_实验报告"/></a><div class="content"><a class="title" href="/2025/07/01/OS-lab5-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="OS_lab5_实验报告">OS_lab5_实验报告</a><time datetime="2025-07-01T06:34:53.000Z" title="Created 2025-07-01 14:34:53">2025-07-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/01/OS-lab4-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="OS_lab4_实验报告"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover7.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OS_lab4_实验报告"/></a><div class="content"><a class="title" href="/2025/07/01/OS-lab4-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="OS_lab4_实验报告">OS_lab4_实验报告</a><time datetime="2025-07-01T06:34:46.000Z" title="Created 2025-07-01 14:34:46">2025-07-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/01/OS-lab3-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="OS_lab3_实验报告"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OS_lab3_实验报告"/></a><div class="content"><a class="title" href="/2025/07/01/OS-lab3-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="OS_lab3_实验报告">OS_lab3_实验报告</a><time datetime="2025-07-01T06:34:40.000Z" title="Created 2025-07-01 14:34:40">2025-07-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/01/OS-lab2-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="OS_lab2_实验报告"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover6.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OS_lab2_实验报告"/></a><div class="content"><a class="title" href="/2025/07/01/OS-lab2-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="OS_lab2_实验报告">OS_lab2_实验报告</a><time datetime="2025-07-01T06:34:33.000Z" title="Created 2025-07-01 14:34:33">2025-07-01</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Jiyuan Zhao</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light.<p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://butterfly.js.org/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
