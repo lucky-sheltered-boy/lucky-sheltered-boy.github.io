@@ -1,0 +1,443 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>2025-北航编译技术实验文法定义及相关说明 | lucky-sheltered-boy's Blog</title><meta name="author" content="Jiyuan Zhao"><meta name="copyright" content="Jiyuan Zhao"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="知识产权声明：以下内容由北航编译技术课程组提供，并非本人创作，本人只负责搬运，有任何问题请以课程组为准！！！  2025编译技术实验文法定义及相关说明一、概要SysY 语言是编译技术实验所完成的编译器的源语言，是 C 语言的一个子集。一个 SysY 语言源程序文件中有且仅有一个名为 main 的主函数定义，除此之外包含若干全局变量声明、常量声明和其他函数定义。SysY 语言支持 32 位有符号数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-北航编译技术实验文法定义及相关说明">
+<meta property="og:url" content="http://example.com/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E/index.html">
+<meta property="og:site_name" content="lucky-sheltered-boy&#39;s Blog">
+<meta property="og:description" content="知识产权声明：以下内容由北航编译技术课程组提供，并非本人创作，本人只负责搬运，有任何问题请以课程组为准！！！  2025编译技术实验文法定义及相关说明一、概要SysY 语言是编译技术实验所完成的编译器的源语言，是 C 语言的一个子集。一个 SysY 语言源程序文件中有且仅有一个名为 main 的主函数定义，除此之外包含若干全局变量声明、常量声明和其他函数定义。SysY 语言支持 32 位有符号数">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover8.JPG">
+<meta property="article:published_time" content="2026-02-05T17:28:57.000Z">
+<meta property="article:modified_time" content="2026-02-05T17:42:28.639Z">
+<meta property="article:author" content="Jiyuan Zhao">
+<meta property="article:tag" content="编译技术">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover8.JPG"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "2025-北航编译技术实验文法定义及相关说明",
+  "url": "http://example.com/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E/",
+  "image": "https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover8.JPG",
+  "datePublished": "2026-02-05T17:28:57.000Z",
+  "dateModified": "2026-02-05T17:42:28.639Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Jiyuan Zhao",
+      "url": "http://example.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2025-北航编译技术实验文法定义及相关说明',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/%E5%BE%AE%E4%BF%A1%E5%A4%B4%E5%83%8F.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">19</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover8.JPG);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">lucky-sheltered-boy's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">2025-北航编译技术实验文法定义及相关说明</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">2025-北航编译技术实验文法定义及相关说明</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-02-05T17:28:57.000Z" title="Created 2026-02-06 01:28:57">2026-02-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-02-05T17:42:28.639Z" title="Updated 2026-02-06 01:42:28">2026-02-06</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF/">编译技术</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">6.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>23mins</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>知识产权声明：以下内容由北航编译技术课程组提供，并非本人创作，本人只负责搬运，有任何问题请以课程组为准！！！</p>
+</blockquote>
+<h1 id="2025编译技术实验文法定义及相关说明"><a href="#2025编译技术实验文法定义及相关说明" class="headerlink" title="2025编译技术实验文法定义及相关说明"></a>2025编译技术实验文法定义及相关说明</h1><h2 id="一、概要"><a href="#一、概要" class="headerlink" title="一、概要"></a>一、概要</h2><p>SysY 语言是编译技术实验所完成的编译器的源语言，是 C 语言的一个子集。一个 SysY 语言源程序文件中有且仅有一个名为 <code>main</code> 的主函数定义，除此之外包含若干全局变量声明、常量声明和其他函数定义。SysY 语言支持 32 位有符号数 <code>int</code> 类型及其的一维数组类型；<code>const</code> 修饰符用于声明常量。</p>
+<p>SysY 语言本身没有提供输入&#x2F;输出(I&#x2F;O)的语言构造，I&#x2F;O 是以运行时库方式提供，库函数可以在 SysY 程序中的函数内调用。部分 SysY 运行时库函数的参数类型会超出 SysY 支持的数据类型，如可以为字符串。SysY 编译器需要能处理这种情况，将 SysY 程序中这样的参数正确地传递给 SysY 运行时库。</p>
+<ul>
+<li><strong>函数</strong>：函数可以带参数也可以不带参数，参数的类型可以是 <code>int</code> 或其一维数组类型；函数可以返回 <code>int</code> 类型的值，或者不返回值（即声明为 <code>void</code> 类型）。当参数为 <code>int</code> 时，按值传递；而参数为数组类型时，实际传递的是数组的起始地址。函数体由若干变量声明和语句组成。</li>
+<li><strong>变量&#x2F;常量声明</strong>：可以在一个变量&#x2F;常量声明语句中声明多个变量或常量，声明时可以带初始化表达式。所有变量&#x2F;常量要求先定义再使用。在函数外声明的为全局变量&#x2F;常量，在函数内声明的为局部变量&#x2F;常量。</li>
+<li><strong>语句</strong>：语句包括赋值语句、表达式语句(表达式可以为空)、语句块、<code>if</code> 语句、<code>for</code> 语句、<code>break</code> 语句、<code>continue</code> 语句、<code>return</code> 语句。语句块中可以包含若干变量声明和语句。</li>
+<li><strong>表达式</strong>：支持基本的算术运算（<code>+</code>、<code>-</code>、<code>*</code>、<code>/</code>、<code>%</code>）、关系运算（<code>==</code>、<code>!=</code>、<code>&lt;</code>、<code>&gt;</code>、<code>&lt;=</code>、<code>&gt;=</code>）和逻辑运算（<code>!</code>、<code>&amp;&amp;</code>、<code>||</code>），非 0 表示真、0 表示假，而关系运算或逻辑运算的结果用 1 表示真、0 表示假。<strong>算符的优先级和结合性以及计算规则(含逻辑运算的“短路计算”)与 C 语言一致。</strong></li>
+</ul>
+<h2 id="二、运行时库"><a href="#二、运行时库" class="headerlink" title="二、运行时库"></a>二、运行时库</h2><p>源程序可通过 <code>getint</code> 与 <code>printf</code> 函数完成 I&#x2F;O 交互。<br>如果希望在 C 语言中测试测试程序，只需要将 <code>getint</code> 加入函数声明即可，示例如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">getint</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> t;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;t);</span><br><span class="line">    <span class="keyword">while</span>(getchar()!=<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">    <span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>printf</code> 函数的使用方法为 <code>&#39;printf&#39; &#39;(&#39; &lt;StringConst&gt; &#123;, &lt;Exp&gt;&#125; &#39;)&#39;</code> ，其中 <code>StringConst</code> 为字符串常量终结符，其规范参考第三章文法及测试程序覆盖要求的第三小节第五部分字符串常量。<code>&lt;StringConst&gt;</code> 的解析超出 SysY 支持的数据类型，SysY 编译器需要能处理这种情况。</p>
+<h2 id="三、文法及测试程序覆盖要求"><a href="#三、文法及测试程序覆盖要求" class="headerlink" title="三、文法及测试程序覆盖要求"></a>三、文法及测试程序覆盖要求</h2><h3 id="1-覆盖要求"><a href="#1-覆盖要求" class="headerlink" title="1. 覆盖要求"></a>1. 覆盖要求</h3><p>测试程序是为了测试编译器而编写的符合文法规则的 SysY 语言程序，在实验的“文法解读作业”中需要同学们编写测试程序。测试程序需<strong>覆盖文法中所有的语法规则</strong>（即每一条推导规则的每一个候选项都要被覆盖），并<strong>满足文法的语义约束</strong>（换而言之，测试程序应该是正确的）。在下一节中，文法正文中以<strong>注释形式</strong>给出需要覆盖的情况。</p>
+<h2 id="2-文法"><a href="#2-文法" class="headerlink" title="2. 文法"></a>2. 文法</h2><p>SysY 语言的文法采用扩展的 Backus 范式（EBNF，Extended Backus-Naur Form）表示，其中：</p>
+<ul>
+<li>符号 <code>[...]</code> 表示方括号内包含的为可选项</li>
+<li>符号 <code>&#123;...&#125;</code> 表示花括号内包含的为可重复 0 次或多次的项</li>
+<li>终结符或者是由单引号括起的串，或者是 <code>Ident</code>、<code>IntConst</code>、<code>StringConst</code> 这样的记号</li>
+<li><strong>所有类似 <code>&#39;main&#39;</code> 这样的用单引号括起的字符串都是保留的关键字</strong></li>
+</ul>
+<p>SysY 语言的文法表示如下，其中 <code>CompUnit</code> 为开始符号：<br><strong>重要：建议同时对照文法第三部分的语义约束。</strong></p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">1  编译单元 CompUnit → &#123;Decl&#125; &#123;FuncDef&#125; MainFuncDef // 1.是否存在Decl 2.是否存在FuncDef</span><br><span class="line">2</span><br><span class="line">3  声明 Decl → ConstDecl | VarDecl // 覆盖两种声明</span><br><span class="line">4</span><br><span class="line">5  常量声明 ConstDecl → &#x27;const&#x27; BType ConstDef &#123; &#x27;,&#x27; ConstDef &#125; &#x27;;&#x27; // 1.花括号内重复0次 2.花括号内重复多次</span><br><span class="line">6</span><br><span class="line">7  基本类型 BType → &#x27;int&#x27;</span><br><span class="line">8</span><br><span class="line">9  常量定义 ConstDef → Ident [ &#x27;[&#x27; ConstExp &#x27;]&#x27; ] &#x27;=<span class="string">&#x27; ConstInitVal // 包含普通变量、一维数组两种情况</span></span><br><span class="line"><span class="string">10</span></span><br><span class="line"><span class="string">11 常量初值 ConstInitVal → ConstExp | &#x27;</span>&#123;<span class="string">&#x27; [ ConstExp &#123; &#x27;</span>,<span class="string">&#x27; ConstExp &#125; ] &#x27;</span>&#125;<span class="string">&#x27; // 1.常表达式初值 2.一维数组初值</span></span><br><span class="line"><span class="string">12</span></span><br><span class="line"><span class="string">13 变量声明 VarDecl → [ &#x27;</span>static<span class="string">&#x27; ] BType VarDef &#123; &#x27;</span>,<span class="string">&#x27; VarDef &#125; &#x27;</span>;&#x27; // 1.花括号内重复0次 2.花括号内重复多次</span><br><span class="line">14</span><br><span class="line">15 变量定义 VarDef → Ident [ &#x27;[&#x27; ConstExp &#x27;]&#x27; ] | Ident [ &#x27;[&#x27; ConstExp &#x27;]&#x27; ] &#x27;=<span class="string">&#x27; InitVal // 包含普通变量、一维数组定义</span></span><br><span class="line"><span class="string">16</span></span><br><span class="line"><span class="string">17 变量初值 InitVal → Exp | &#x27;</span>&#123;<span class="string">&#x27; [ Exp &#123; &#x27;</span>,<span class="string">&#x27; Exp &#125; ] &#x27;</span>&#125;<span class="string">&#x27; // 1.表达式初值 2.一维数组初值</span></span><br><span class="line"><span class="string">18</span></span><br><span class="line"><span class="string">19 函数定义 FuncDef → FuncType Ident &#x27;</span>(<span class="string">&#x27; [FuncFParams] &#x27;</span>)<span class="string">&#x27; Block // 1.无形参 2.有形参</span></span><br><span class="line"><span class="string">20</span></span><br><span class="line"><span class="string">21 主函数定义 MainFuncDef → &#x27;</span>int<span class="string">&#x27; &#x27;</span>main<span class="string">&#x27; &#x27;</span>(<span class="string">&#x27; &#x27;</span>)<span class="string">&#x27; Block // 存在main函数</span></span><br><span class="line"><span class="string">22</span></span><br><span class="line"><span class="string">23 函数类型 FuncType → &#x27;</span>void<span class="string">&#x27; | &#x27;</span>int<span class="string">&#x27; // 覆盖两种类型的函数</span></span><br><span class="line"><span class="string">24</span></span><br><span class="line"><span class="string">25 函数形参表 FuncFParams → FuncFParam &#123; &#x27;</span>,<span class="string">&#x27; FuncFParam &#125; // 1.花括号内重复0次 2.花括号内重复多次</span></span><br><span class="line"><span class="string">26</span></span><br><span class="line"><span class="string">27 函数形参 FuncFParam → BType Ident [&#x27;</span>[<span class="string">&#x27; &#x27;</span>]<span class="string">&#x27;] // 1.普通变量 2.一维数组变量</span></span><br><span class="line"><span class="string">28</span></span><br><span class="line"><span class="string">29 语句块 Block → &#x27;</span>&#123;<span class="string">&#x27; &#123; BlockItem &#125; &#x27;</span>&#125;<span class="string">&#x27; // 1.花括号内重复0次 2.花括号内重复多次</span></span><br><span class="line"><span class="string">30</span></span><br><span class="line"><span class="string">31 语句块项 BlockItem → Decl | Stmt // 覆盖两种语句块项</span></span><br><span class="line"><span class="string">32</span></span><br><span class="line"><span class="string">33 语句 Stmt → LVal &#x27;</span>=<span class="string">&#x27; Exp &#x27;</span>;&#x27; // 每种类型的语句都要覆盖</span><br><span class="line">34 | [Exp] &#x27;;&#x27; // 有无Exp两种情况；printf函数调用</span><br><span class="line">35 | Block</span><br><span class="line">36 | &#x27;if&#x27; &#x27;(&#x27; Cond &#x27;)&#x27; Stmt [ &#x27;else&#x27; Stmt ] // 1.有else 2.无else</span><br><span class="line">37 | &#x27;for&#x27; &#x27;(&#x27; [ForStmt] &#x27;;&#x27; [Cond] &#x27;;&#x27; [ForStmt] &#x27;)&#x27; Stmt // 1. 无缺省，1种情况 2. ForStmt与Cond中缺省一个，3种情况 3. ForStmt与Cond中缺省两个，3种情况 4. ForStmt与Cond全部缺省，1种情况</span><br><span class="line">38 | &#x27;break&#x27; &#x27;;&#x27;</span><br><span class="line">39 | &#x27;continue&#x27; &#x27;;&#x27;</span><br><span class="line">40 | &#x27;return&#x27; [Exp] &#x27;;&#x27; // 1.有Exp 2.无Exp</span><br><span class="line">41 | &#x27;printf&#x27;&#x27;(&#x27;StringConst &#123;&#x27;,&#x27;Exp&#125;&#x27;)&#x27;&#x27;;&#x27; // 1.有Exp 2.无Exp</span><br><span class="line">42</span><br><span class="line">43 语句 ForStmt → LVal &#x27;=<span class="string">&#x27; Exp &#123; &#x27;</span>,<span class="string">&#x27; LVal &#x27;</span>=<span class="string">&#x27; Exp &#125; // 1.花括号内重复0次 2.花括号内重复多次</span></span><br><span class="line"><span class="string">44</span></span><br><span class="line"><span class="string">45 表达式 Exp → AddExp // 存在即可</span></span><br><span class="line"><span class="string">46</span></span><br><span class="line"><span class="string">47 条件表达式 Cond → LOrExp // 存在即可</span></span><br><span class="line"><span class="string">48</span></span><br><span class="line"><span class="string">49 左值表达式 LVal → Ident [&#x27;</span>[<span class="string">&#x27; Exp &#x27;</span>]<span class="string">&#x27;] // 1.普通变量、常量 2.一维数组</span></span><br><span class="line"><span class="string">50</span></span><br><span class="line"><span class="string">51 基本表达式 PrimaryExp → &#x27;</span>(<span class="string">&#x27; Exp &#x27;</span>)<span class="string">&#x27; | LVal | Number</span></span><br><span class="line"><span class="string">52</span></span><br><span class="line"><span class="string">53 数值 Number → IntConst // 存在即可</span></span><br><span class="line"><span class="string">54</span></span><br><span class="line"><span class="string">55 一元表达式 UnaryExp → PrimaryExp | Ident &#x27;</span>(<span class="string">&#x27; [FuncRParams] &#x27;</span>)<span class="string">&#x27; | UnaryOp UnaryExp // 3种情况均需覆盖,函数调用也需要覆盖FuncRParams的不同情况</span></span><br><span class="line"><span class="string">56</span></span><br><span class="line"><span class="string">57 单目运算符 UnaryOp → &#x27;</span>+<span class="string">&#x27; | &#x27;</span>−<span class="string">&#x27; | &#x27;</span>!<span class="string">&#x27; 注：&#x27;</span>!<span class="string">&#x27;仅出现在条件表达式中 // 三种均需覆盖</span></span><br><span class="line"><span class="string">58</span></span><br><span class="line"><span class="string">59 函数实参表达式 FuncRParams → Exp &#123; &#x27;</span>,<span class="string">&#x27; Exp &#125; // 1.花括号内重复0次 2.花括号内重复多次 3.Exp需要覆盖数组传参和部分数组传参</span></span><br><span class="line"><span class="string">60</span></span><br><span class="line"><span class="string">61 乘除模表达式 MulExp → UnaryExp | MulExp (&#x27;</span>*<span class="string">&#x27; | &#x27;</span>/<span class="string">&#x27; | &#x27;</span>%<span class="string">&#x27;) UnaryExp // 1.UnaryExp 2.* 3./ 4.% 均需覆盖</span></span><br><span class="line"><span class="string">62</span></span><br><span class="line"><span class="string">63 加减表达式 AddExp → MulExp | AddExp (&#x27;</span>+<span class="string">&#x27; | &#x27;</span>−<span class="string">&#x27;) MulExp // 1.MulExp 2.+ 需覆盖 3.- 需覆盖</span></span><br><span class="line"><span class="string">64</span></span><br><span class="line"><span class="string">65 关系表达式 RelExp → AddExp | RelExp (&#x27;</span>&lt;<span class="string">&#x27; | &#x27;</span>&gt;<span class="string">&#x27; | &#x27;</span>&lt;=<span class="string">&#x27; | &#x27;</span>&gt;=<span class="string">&#x27;) AddExp // 1.AddExp 2.&lt; 3.&gt; 4.&lt;= 5.&gt;= 均需覆盖</span></span><br><span class="line"><span class="string">66</span></span><br><span class="line"><span class="string">67 相等性表达式 EqExp → RelExp | EqExp (&#x27;</span>==<span class="string">&#x27; | &#x27;</span>!=<span class="string">&#x27;) RelExp // 1.RelExp 2.== 3.!= 均需覆盖</span></span><br><span class="line"><span class="string">68</span></span><br><span class="line"><span class="string">69 逻辑与表达式 LAndExp → EqExp | LAndExp &#x27;</span>&amp;&amp;<span class="string">&#x27; EqExp // 1.EqExp 2.&amp;&amp; 均需覆盖</span></span><br><span class="line"><span class="string">70</span></span><br><span class="line"><span class="string">71 逻辑或表达式 LOrExp → LAndExp | LOrExp &#x27;</span>||<span class="string">&#x27; LAndExp // 1.LAndExp 2.|| 均需覆盖</span></span><br><span class="line"><span class="string">72</span></span><br><span class="line"><span class="string">73 常量表达式 ConstExp → AddExp 注：使用的 Ident 必须是常量 // 存在即可</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-补充说明"><a href="#3-补充说明" class="headerlink" title="3. 补充说明"></a>3. 补充说明</h2><h3 id="1-标识符-Ident"><a href="#1-标识符-Ident" class="headerlink" title="(1) 标识符 Ident"></a>(1) 标识符 Ident</h3><p>SysY 语言中标识符 <code>Ident</code> 的规范如下 ( identifier ) ：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">identifier</span> → identifier-nondigit</span><br><span class="line">           | identifier identifier-nondigit</span><br><span class="line">           | identifier digit</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>identifier-nondigit</code> 为下划线或大小写字母，<code>digit</code> 为 0 到 9 的数字。</p>
+<p><strong>注</strong>：请参考 ISO&#x2F;IEC 9899 <a target="_blank" rel="noopener" href="http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf">http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf</a> 第 51 页关于标识符的定义<strong>同名标识符</strong>的约定：</p>
+<ul>
+<li>全局变量（常量）和局部变量（常量）的作用域可以重叠，重叠部分局部变量（常量）优先；</li>
+<li>同名局部变量的作用域不能重叠，即同一个 <code>Block</code> 内不能有同名的标识符（常量&#x2F;变量）；</li>
+<li>在不同的作用域下，SysY 语言中变量（常量）名可以与函数名相同；</li>
+<li>保留关键字不能作为标识符。</li>
+</ul>
+<p><strong>合法样例</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">0</span>;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> a = <span class="number">1</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>,a); <span class="comment">// 输出 1</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>非法样例</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">0</span>;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> a = <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> a = <span class="number">2</span>; <span class="comment">// 非法！</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-注释"><a href="#2-注释" class="headerlink" title="(2) 注释"></a>(2) 注释</h3><p>SysY 语言中注释的规范与 C 语言一致，如下：</p>
+<ul>
+<li><strong>单行注释</strong>：以序列 <code>//</code> 开始，直到换行符结束，不包括换行符。</li>
+<li><strong>多行注释</strong>：以序列 <code>/*</code> 开始，直到第一次出现 <code>*/</code> 时结束，包括结束处 <code>*/</code>。</li>
+</ul>
+<p><strong>注</strong>：请参考 ISO&#x2F;IEC 9899 第 66 页关于注释的定义。</p>
+<h3 id="3-数值常量"><a href="#3-数值常量" class="headerlink" title="(3) 数值常量"></a>(3) 数值常量</h3><p>SysY 语言中数值常量可以是整型数 <code>IntConst</code>，其规范如下（对应 <code>integer-const</code>）：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">整型常量 integer-const → decimal-const | 0</span><br><span class="line"><span class="attribute">decimal-const</span> → nonzero-digit | decimal-const digit</span><br><span class="line"><span class="attribute">nonzero-digit</span> 为1至9的数字。</span><br></pre></td></tr></table></figure>
+
+<p><strong>注</strong>：请参考 ISO&#x2F;IEC 9899 第 54 页关于整型常量的定义，在此基础上忽略所有后缀。</p>
+<h3 id="4-字符串常量"><a href="#4-字符串常量" class="headerlink" title="(4) 字符串常量"></a>(4) 字符串常量</h3><p>SysY 语言中 <code>&lt;StringConst&gt;</code> 的定义如下：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;FormatChar&gt; → %d</span><br><span class="line">&lt;NormalChar&gt; → 十进制编码为32,33,35-126的ASCII字符，&#x27;\&#x27;（编码92）出现当且仅当为&#x27;\n&#x27;</span><br><span class="line">&lt;Char&gt; → &lt;FormatChar&gt; | &lt;NormalChar&gt;</span><br><span class="line">&lt;StringConst&gt; → &#x27;&quot;&#x27;&#123;&lt;Char&gt;&#125;&#x27;&quot;&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>字符串中<strong>仅可能会出现一种转义字符 <code>\n</code></strong>，用以标注此处换行，其他转义情况无需考虑。</p>
+<h2 id="4-难度分级"><a href="#4-难度分级" class="headerlink" title="4. 难度分级"></a>4. 难度分级</h2><p>为了更好的帮助同学们完成编译器的设计，课程组将题目难度做了区分。难度等级分为三级：A、B、C，难度依次递减：</p>
+<ul>
+<li><strong>C</strong>：最简单的等级，重点考察编译器的基础设计，不包括任何与数组有关的部分，<code>if</code> 与 <code>for</code> 中的条件表达式也只有一个表达式（即不出现 <code>&amp;&amp;</code> 和 <code>||</code> ）不考察短路求值的规则。</li>
+<li><strong>B</strong>：在 C 级的基础上，<strong>新增数组</strong>，包括数组定义，数组元素的使用、数组传参等。</li>
+<li><strong>A</strong>：在 B 级的基础上，<strong>新增复杂条件的运算和判断</strong>，要遵守短路求值的规则。<ul>
+<li>短路求值样例：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> global_var = <span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">func</span><span class="params">()</span> &#123;</span><br><span class="line">    global_var = global_var + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0</span> &amp;&amp; func())&#123;</span><br><span class="line">        ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>,global_var); <span class="comment">// 输出 0</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">1</span> || func()) &#123;</span><br><span class="line">        ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>,global_var); <span class="comment">// 输出 0</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="四、语义约束"><a href="#四、语义约束" class="headerlink" title="四、语义约束"></a>四、语义约束</h2><p>符合上述文法的程序集合是合法的 SysY 语言程序集合的超集。下面进一步给出 SysY 语言的语义约束。</p>
+<h3 id="运行时库"><a href="#运行时库" class="headerlink" title="运行时库"></a>运行时库</h3><ol>
+<li><strong>为了降低开发难度，保证所有测试程序中 <code>getint</code> 与 <code>printf</code> 只会作为运行时库调用出现，不会作为自定义的变量&#x2F;函数标识符。</strong></li>
+<li><code>printf</code> 函数默认不换行。</li>
+<li>与 C 语言中的 <code>printf</code> 类似，输出语句中，格式字符将被替换为对应标识符，普通字符原样输出。</li>
+</ol>
+<h3 id="static-关键字"><a href="#static-关键字" class="headerlink" title="static 关键字"></a>static 关键字</h3><ol>
+<li><code>static</code> 关键字用于修饰<strong>静态局部变量</strong>，不会在全局变量定义中出现。</li>
+<li>用 <code>static</code> 修饰的变量声明，若带有初始值，则初始值可在编译期内求出。</li>
+<li>用 <code>static</code> 修饰的变量声明，即使在声明时未赋初值，编译器也会把它初始化为 0。</li>
+<li><code>static</code> 关键字指定的变量只初始化一次，并在之后<strong>调用该函数时保留其状态</strong>，离开函数时不会被销毁。但其修饰的变量作用域被限制在声明此变量的函数内部。</li>
+</ol>
+<h3 id="编译单元-CompUnit"><a href="#编译单元-CompUnit" class="headerlink" title="编译单元 CompUnit"></a>编译单元 CompUnit</h3><ol>
+<li><code>CompUnit</code> 的<strong>顶层</strong>变量&#x2F;常量声明语句（对应 <code>Decl</code> ）、函数定义（对应 <code>FuncDef</code> ）都不可以重复定义同名标识符（ <code>Ident</code> ），即便标识符的类型不同也不允许。</li>
+<li><code>CompUnit</code> 的变量&#x2F;常量&#x2F;函数声明的作用域从该声明处开始到文件结尾。</li>
+</ol>
+<h3 id="常量定义-ConstDef"><a href="#常量定义-ConstDef" class="headerlink" title="常量定义 ConstDef"></a>常量定义 ConstDef</h3><ol>
+<li><code>ConstDef</code> 用于定义符号常量。<code>ConstDef</code> 中的 <code>Ident</code> 为常量的标识符，在 <code>Ident</code> 后、<code>=</code> 之前是可选的一维数组以及一维数组长度的定义部分，在 <code>=</code> 之后是初始值。<strong>常量必须有对应的初始值</strong>。</li>
+<li><code>ConstDef</code> 的一维数组以及一维数组长度的定义部分不存在时，表示定义单个变量。</li>
+<li><code>ConstDef</code> 的一维数组以及一维数组长度的定义部分存在时，表示定义数组。其语义和 C 语言一致，每维的下界从 0 编号。</li>
+<li><code>ConstDef</code> 中表示各维长度的 <code>ConstExp</code> 都<strong>必须能在编译时求值到非负整数</strong>。</li>
+</ol>
+<h3 id="变量定义-VarDef"><a href="#变量定义-VarDef" class="headerlink" title="变量定义 VarDef"></a>变量定义 VarDef</h3><ol>
+<li>变量的定义与常量基本一致，但是变量可以没有初始值部分，此时其运行时实际初值未定义。</li>
+</ol>
+<h3 id="初值-ConstInitVal-InitVal"><a href="#初值-ConstInitVal-InitVal" class="headerlink" title="初值 ConstInitVal &#x2F; InitVal"></a>初值 ConstInitVal &#x2F; InitVal</h3><ol>
+<li>任何常量的初值表达式必须是常量表达式 <code>ConstExp</code>。</li>
+<li><strong>常量必须有初始值</strong>，常量数组不需要每一个元素都有初始值，但是未赋值的部分编译器需要将其置 0。</li>
+<li>全局变量的初值表达式也必须是常量表达式 <code>ConstExp</code>。但局部变量的初值表达式是 <code>Exp</code>，可以使用已经声明的变量。</li>
+<li>对于单个的常量或变量，初始值也必须是单个的表达式。（表达式包括单个数字、单个变量、单个常量等情况）</li>
+<li><strong>对于全局变量，如果没有给出初始值，那么应该全部置 0</strong>，局部变量不需要。</li>
+</ol>
+<h3 id="函数形参-FuncFParam-与实参-FuncRParams"><a href="#函数形参-FuncFParam-与实参-FuncRParams" class="headerlink" title="函数形参 FuncFParam 与实参 FuncRParams"></a>函数形参 FuncFParam 与实参 FuncRParams</h3><ol>
+<li><p><code>FuncFParam</code> 定义一个函数的一个形式参数。当 <code>Ident</code> 后面的可选部分存在时， 表示数组定义。</p>
+</li>
+<li><p>函数实参的语法是 <code>Exp</code>。对于普通变量，遵循按值传递；对于数组类型的参数，则形参接收的是实参数组的地址，并通过地址间接访问实参数组中的元素。</p>
+</li>
+<li><p>普通常量可以作为函数参数，但是常量数组不可以，如 <code>const int arr[3] = &#123;1,2,3&#125;</code> ，常量数组 <code>arr</code> <strong>不能</strong>作为参数传入到函数中。</p>
+</li>
+<li><p>函数调用时要保证实参类型和形参类型一致，具体请看下面例子。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">f1</span><span class="params">(<span class="type">int</span> x)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">f2</span><span class="params">(<span class="type">int</span> x[])</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="type">int</span> x = <span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span> t[<span class="number">5</span>] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;</span><br><span class="line">    f1(x); <span class="comment">// 合法</span></span><br><span class="line">    f1(t[<span class="number">0</span>]); <span class="comment">// 合法</span></span><br><span class="line">    f1(t); <span class="comment">// 不合法</span></span><br><span class="line">    f2(t); <span class="comment">// 合法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="函数定义-FuncDef"><a href="#函数定义-FuncDef" class="headerlink" title="函数定义 FuncDef"></a>函数定义 FuncDef</h3><ol>
+<li><code>FuncDef</code> 表示函数定义。其中的 <code>FuncType</code> 指明返回类型。当返回类型为 <code>int</code> 时，函数内所有分支都应当含有带有 <code>Exp</code> 的 <code>return</code> 语句。不含有 <code>return</code> 语句的分支的返回值未定义。当返回值类型为 <code>void</code> 时，函数内只能出现不带返回值的 <code>return</code> 语句。</li>
+<li><code>FuncFParams</code> 的语义如前文。</li>
+</ol>
+<h3 id="语句块-Block"><a href="#语句块-Block" class="headerlink" title="语句块 Block"></a>语句块 Block</h3><ol>
+<li><code>Block</code> 表示语句块。语句块会创建作用域，语句块内声明的常量和变量的生存期在该语句块内。</li>
+<li>语句块内可以再次定义与语句块外同名的变量或常量（通过 <code>Decl</code> 语句)，其作用域从定义处开始到该语句块尾结束，它隐藏语句块外的同名变量或常量。</li>
+<li>为了降低开发难度，<strong>保证所有测试程序中有返回值的函数 <code>Block</code> 的最后一句一定会显式的给出 <code>return</code> 语句，否则就当作“无返回语句”的错误处理</strong>。同时，同学们编写上传的样例程序时，也需要保证这一点。</li>
+<li><code>main</code> 函数的返回值只能为常数 0。</li>
+</ol>
+<h3 id="语句-Stmt"><a href="#语句-Stmt" class="headerlink" title="语句 Stmt"></a>语句 Stmt</h3><ol>
+<li><code>Stmt</code> 中的 <code>if</code> 类型语句遵循就近匹配。</li>
+<li>单个 <code>Exp</code> 可以作为 <code>Stmt</code>。这个 <code>Exp</code> 会被求值，但是所求的值会被丢弃。</li>
+</ol>
+<h3 id="左值-LVal"><a href="#左值-LVal" class="headerlink" title="左值 LVal"></a>左值 LVal</h3><ol>
+<li><code>LVal</code> 表示具有左值的表达式，可以为变量或者某个数组元素。</li>
+<li>当 <code>LVal</code> 表示数组时，方括号个数必须和数组变量的维数相同（即定位到元素）。</li>
+<li>当 <code>LVal</code> 表示单个变量时，不能出现后面的方括号。</li>
+</ol>
+<h3 id="Exp-与-Cond"><a href="#Exp-与-Cond" class="headerlink" title="Exp 与 Cond"></a>Exp 与 Cond</h3><ol>
+<li><strong><code>Exp</code> 在 SysY 中代表 <code>int</code> 型或 <code>void</code> 型的表达式；<code>Cond</code> 代表条件表达式，故它定义为 <code>LOrExp</code>。前者的单目运算符中不出现 <code>!</code>，后者可以出现。</strong></li>
+<li><code>LVal</code> 必须是当前作用域内、该 <code>Exp</code> 语句之前有定义的变量或常量；对于赋值号左边的 <code>LVal</code> 必须是变量。</li>
+<li>函数调用形式是 <code>Ident ‘(’ FuncRParams ‘)’</code>，其中的 <code>FuncRParams</code> 表示实际参数。实际参数的类型和个数必须与 <code>Ident</code> 对应的函数定义的形参完全匹配。</li>
+<li>SysY 中算符的优先级与结合性与 C 语言一致，在上面的 SysY 文法中已体现出优先级与结合性的定义。</li>
+</ol>
+<h3 id="一元表达式-UnaryExp"><a href="#一元表达式-UnaryExp" class="headerlink" title="一元表达式 UnaryExp"></a>一元表达式 UnaryExp</h3><ol>
+<li>相邻两个 <code>UnaryOp</code> 不能相同，如 <code>int a = ++-i;</code>，但是 <code>int a = +-+i;</code> 是可行的。</li>
+<li><code>UnaryOp</code> 为 <code>&#39;!&#39;</code> 只能出现在条件表达式中。</li>
+</ol>
+<h3 id="常量表达式-ConstExp"><a href="#常量表达式-ConstExp" class="headerlink" title="常量表达式 ConstExp"></a>常量表达式 ConstExp</h3><ol>
+<li><strong><code>ConstExp</code> 在 SysY 中代表 <code>int</code> 型表达式。</strong></li>
+<li><code>ConstExp</code> 在编译期内是可被求值的，<code>ConstExp -&gt; AddExp</code> 中涉及到的的 <code>ident</code> 均必须是常量，即只能使用常数、可以取得具体值的常量以及由它们组成的、在编译器内可被求值的算术表达式。</li>
+</ol>
+<h2 id="六、错误处理"><a href="#六、错误处理" class="headerlink" title="六、错误处理"></a>六、错误处理</h2><p><strong>以下内容是为了词法分析及以后的实验作业准备的，在完成文法解读作业时请编写符合上面文法的正确的源程序！</strong></p>
+<p>从词法分析作业开始，我们每次作业都要求同学们开发的编译能够处理正确的程序与错误的程序，对于正确的程序按照每次作业要求输出正确结果，对于错误的程序输出所有的错误的行号和错误类别码。</p>
+<p>错误主要分为三类，词法分析部分错误，语法分析部分错误，语义分析部分错误。同学们在涉及编译器时，应该完成这三个部分的所有错误处理之后再进行错误的输出。</p>
+<p><strong>后续实验中，对于错误的源程序完成语义分析后不进行中间代码生成。</strong></p>
+<h3 id="错误类型列表"><a href="#错误类型列表" class="headerlink" title="错误类型列表"></a>错误类型列表</h3><p>错误类别 <code>a</code> 为词法分析中会出现的错误。<br>错误类别 <code>i, j, k</code> 为语法分析中会出现的错误。<br>剩余错误类别均为语义分析中会出现的错误。</p>
+<table>
+<thead>
+<tr>
+<th align="left">错误类型</th>
+<th align="left">错误类别码</th>
+<th align="left">解释</th>
+<th align="left">对应文法及出错符号，…表示省略该条规则其他部分</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">非法符号</td>
+<td align="left">a</td>
+<td align="left">出现了 <code>&amp;</code> 和 <code>|</code> 这两个符号，应该将其当做 <code>&amp;&amp;</code> 与 <code>||</code> 进行处理，但是在记录单词名称的时候仍记录 <code>&amp;</code> 和 <code>|</code>， <strong>报错行号为 <code>&amp;</code> 或 <code>|</code> 所在的行号</strong>。</td>
+<td align="left"><code>LAndExp → LAndExp &#39;&amp;&amp;&#39; EqExp</code><br><code>LOrExp → LOrExp &#39;||&#39; LAndExp</code></td>
+</tr>
+<tr>
+<td align="left">名字重定义</td>
+<td align="left">b</td>
+<td align="left">函数名或者变量名在<strong>当前作用域</strong>下重复定义。<br>注意，变量一定是同一级作用域下才会判定出错，不同级作用域下，内层会覆盖外层定义。<br>报错行号 <code>Ident</code> 所在行数。</td>
+<td align="left"><code>ConstDef → Ident …</code><br><code>VarDef → … Ident … Ident …</code><br><code>FuncDef → FuncType Ident …</code><br><code>FuncFParam → BType Ident ...</code></td>
+</tr>
+<tr>
+<td align="left">未定义的名字</td>
+<td align="left">c</td>
+<td align="left">使用了未定义的标识符报错行号为 <code>Ident</code> 所在行数。</td>
+<td align="left"><code>LVal → Ident …</code><br><code>UnaryExp → Ident …</code></td>
+</tr>
+<tr>
+<td align="left">函数参数个数不匹配</td>
+<td align="left">d</td>
+<td align="left">函数调用语句中，参数个数与函数定义中的参数个数不匹配。报错行号为函数调用语句的<strong>函数名</strong>所在行数。</td>
+<td align="left"><code>UnaryExp → Ident ‘(’ [ FuncRParams ] ‘)’</code></td>
+</tr>
+<tr>
+<td align="left">函数参数类型不匹配</td>
+<td align="left">e</td>
+<td align="left">函数调用语句中，参数类型与函数定义中对应位置的参数类型不匹配。报错行号为函数调用语句的<strong>函数名</strong>所在行数。<strong>关于参数类型不匹配会在下方特别说明进行详细说明。</strong></td>
+<td align="left"><code>UnaryExp → Ident ‘(’ [ FuncRParams ] ‘)’</code></td>
+</tr>
+<tr>
+<td align="left">无返回值的函数存在不匹配的return语句</td>
+<td align="left">f</td>
+<td align="left">报错行号为<code>return</code>所在行号。</td>
+<td align="left"><code>Stmt → ‘return’ &#123; ‘[’ Exp ’]’ &#125; ‘;’</code></td>
+</tr>
+<tr>
+<td align="left">有返回值的函数缺少return语句</td>
+<td align="left">g</td>
+<td align="left">只需要考虑函数末尾是否存在return语句，<strong>无需考虑控制流</strong>。报错行号为函数结尾的<code>&#125;</code>所在行号。</td>
+<td align="left"><code>FuncDef → FuncType Ident ‘(’ [FuncFParams] ‘)’ Block</code><br><code>MainFuncDef → &#39;int&#39; &#39;main&#39; &#39;(&#39; &#39;)&#39; Block</code></td>
+</tr>
+<tr>
+<td align="left">不能改变常量的值</td>
+<td align="left">h</td>
+<td align="left"><code>LVal</code> 为常量时，不能对其修改。报错行号为 <code>LVal</code> 所在行号。</td>
+<td align="left"><code>Stmt → LVal ‘=’ Exp ‘;’</code><br><code>ForStmt → LVal &#39;=&#39; Exp …</code></td>
+</tr>
+<tr>
+<td align="left">缺少分号</td>
+<td align="left">i</td>
+<td align="left">报错行号为分号<strong>前一个非终结符</strong>所在行号。</td>
+<td align="left"><code>Stmt, ConstDecl 及 VarDecl</code> 中的 <code>&#39;;’</code></td>
+</tr>
+<tr>
+<td align="left">缺少右小括号’)’</td>
+<td align="left">j</td>
+<td align="left">报错行号为右小括号<strong>前一个非终结符</strong>所在行号。</td>
+<td align="left">函数调用 (<code>UnaryExp</code>)、函数定义 (<code>FuncDef, MainFuncDef</code>)、 <code>Stmt</code> 及 <code>PrimaryExp</code> 中的 <code>&#39;)’</code></td>
+</tr>
+<tr>
+<td align="left">缺少右中括号’]’</td>
+<td align="left">k</td>
+<td align="left">报错行号为右中括号<strong>前一个非终结符</strong>所在行号。</td>
+<td align="left">数组定义 (<code>ConstDef, VarDef, FuncFParam</code>) 和使用 (<code>LVal</code>) 中的 <code>&#39;]’</code></td>
+</tr>
+<tr>
+<td align="left">printf中格式字符与表达式个数不匹配</td>
+<td align="left">l</td>
+<td align="left">报错行号为<code>printf</code>所在行号。</td>
+<td align="left"><code>&#39;printf&#39; &#39;(&#39; StringConst &#123;&#39;,&#39; Exp&#125; &#39;)&#39; &#39;;&#39;</code></td>
+</tr>
+<tr>
+<td align="left">在非循环块中使用break和continue语句</td>
+<td align="left">m</td>
+<td align="left">报错行号为 <code>break</code> 与 <code>continue</code> 所在行号。</td>
+<td align="left"><code>Stmt → ‘break’ ‘;’|‘continue’ ‘;’</code></td>
+</tr>
+</tbody></table>
+<h3 id="错误输出示例"><a href="#错误输出示例" class="headerlink" title="错误输出示例"></a>错误输出示例</h3><p><strong>输出结构</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">错误的行号 错误的类别码（中间仅用一个空格间隔）</span><br></pre></td></tr></table></figure>
+
+<p><strong>样例输入</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">int</span> const1 = <span class="number">1</span>, const2 = <span class="number">-100</span>;</span><br><span class="line"><span class="type">int</span> change1;</span><br><span class="line"><span class="type">int</span> <span class="title function_">gets1</span><span class="params">(<span class="type">int</span> var1,<span class="type">int</span> var2)</span>&#123;</span><br><span class="line">    const1 = <span class="number">999</span>;</span><br><span class="line">    change1 = var1 + var2</span><br><span class="line">    <span class="keyword">return</span> (change1);</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    change1 = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>样例输出</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">4 h</span><br><span class="line">5 i</span><br></pre></td></tr></table></figure>
+
+<h3 id="文法符号与错误类型对应"><a href="#文法符号与错误类型对应" class="headerlink" title="文法符号与错误类型对应"></a>文法符号与错误类型对应</h3><p>为方便对照, 下文给出了文法符号与可能存在的错误的对应关系:</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">编译单元 CompUnit → &#123;Decl&#125; &#123;FuncDef&#125; MainFuncDef</span><br><span class="line"></span><br><span class="line">声明 Decl → ConstDecl | VarDecl</span><br><span class="line"></span><br><span class="line">常量声明 ConstDecl → &#x27;const&#x27; BType ConstDef &#123; &#x27;,&#x27; ConstDef &#125; &#x27;;&#x27; // i</span><br><span class="line"></span><br><span class="line">基本类型 BType → &#x27;int&#x27;</span><br><span class="line"></span><br><span class="line">常量定义 ConstDef → Ident [ &#x27;[&#x27; ConstExp &#x27;]&#x27; ] &#x27;=<span class="string">&#x27; ConstInitVal // b, k</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">常量初值 ConstInitVal → ConstExp | &#x27;</span>&#123;<span class="string">&#x27; [ ConstExp &#123; &#x27;</span>,<span class="string">&#x27; ConstExp &#125; ] &#x27;</span>&#125;<span class="string">&#x27;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">变量声明 VarDecl → [ &#x27;</span>static<span class="string">&#x27; ] BType VarDef &#123; &#x27;</span>,<span class="string">&#x27; VarDef &#125; &#x27;</span>;&#x27; // i</span><br><span class="line"></span><br><span class="line">变量定义 VarDef → Ident [ &#x27;[&#x27; ConstExp &#x27;]&#x27; ] | Ident [ &#x27;[&#x27; ConstExp &#x27;]&#x27; ] &#x27;=<span class="string">&#x27; InitVal // b, k</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">变量初值 InitVal → Exp | &#x27;</span>&#123;<span class="string">&#x27; [ Exp &#123; &#x27;</span>,<span class="string">&#x27; Exp &#125; ] &#x27;</span>&#125;<span class="string">&#x27;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">函数定义 FuncDef → FuncType Ident &#x27;</span>(<span class="string">&#x27; [FuncFParams] &#x27;</span>)<span class="string">&#x27; Block // b, g, j</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">主函数定义 MainFuncDef → &#x27;</span>int<span class="string">&#x27; &#x27;</span>main<span class="string">&#x27; &#x27;</span>(<span class="string">&#x27; &#x27;</span>)<span class="string">&#x27; Block // g j</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">函数类型 FuncType → &#x27;</span>void<span class="string">&#x27; | &#x27;</span>int<span class="string">&#x27;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">函数形参表 FuncFParams → FuncFParam &#123; &#x27;</span>,<span class="string">&#x27; FuncFParam &#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">函数形参 FuncFParam → BType Ident [&#x27;</span>[<span class="string">&#x27; &#x27;</span>]<span class="string">&#x27;] // b, k</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">语句块 Block → &#x27;</span>&#123;<span class="string">&#x27; &#123; BlockItem &#125; &#x27;</span>&#125;<span class="string">&#x27;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">语句块项 BlockItem → Decl | Stmt</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">语句 Stmt → LVal &#x27;</span>=<span class="string">&#x27; Exp &#x27;</span>;&#x27; // h, i</span><br><span class="line">| [Exp] &#x27;;&#x27; // i, l(printf 被调用时)</span><br><span class="line">| Block</span><br><span class="line">| &#x27;if&#x27; &#x27;(&#x27; Cond &#x27;)&#x27; Stmt [ &#x27;else&#x27; Stmt ] // j</span><br><span class="line">| &#x27;for&#x27; &#x27;(&#x27; [ForStmt] &#x27;;&#x27; [Cond] &#x27;;&#x27; [ForStmt] &#x27;)&#x27; Stmt // h</span><br><span class="line">| &#x27;break&#x27; &#x27;;&#x27; | &#x27;continue&#x27; &#x27;;&#x27; // i m</span><br><span class="line">| &#x27;return&#x27; [Exp] &#x27;;&#x27; // f i</span><br><span class="line">| &#x27;printf&#x27;&#x27;(&#x27;StringConst &#123;&#x27;,&#x27;Exp&#125;&#x27;)&#x27;&#x27;;&#x27; // i j l</span><br><span class="line"></span><br><span class="line">语句 ForStmt → LVal &#x27;=<span class="string">&#x27; Exp &#123; &#x27;</span>,<span class="string">&#x27; LVal &#x27;</span>=<span class="string">&#x27; Exp &#125; // h</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">表达式 Exp → AddExp</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">条件表达式 Cond → LOrExp</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">左值表达式 LVal → Ident [&#x27;</span>[<span class="string">&#x27; Exp &#x27;</span>]<span class="string">&#x27;] // c k</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">基本表达式 PrimaryExp → &#x27;</span>(<span class="string">&#x27; Exp &#x27;</span>)<span class="string">&#x27; | LVal | Number // j</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">数值 Number → IntConst</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">一元表达式 UnaryExp → PrimaryExp | Ident &#x27;</span>(<span class="string">&#x27; [FuncRParams] &#x27;</span>)<span class="string">&#x27; | UnaryOp UnaryExp // c d e j</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">单目运算符 UnaryOp → &#x27;</span>+<span class="string">&#x27; | &#x27;</span>−<span class="string">&#x27; | &#x27;</span>!<span class="string">&#x27; 注：&#x27;</span>!<span class="string">&#x27;仅出现在条件表达式中</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">函数实参表 FuncRParams → Exp &#123; &#x27;</span>,<span class="string">&#x27; Exp &#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">乘除模表达式 MulExp → UnaryExp | MulExp (&#x27;</span>*<span class="string">&#x27; | &#x27;</span>/<span class="string">&#x27; | &#x27;</span>%<span class="string">&#x27;) UnaryExp</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">加减表达式 AddExp → MulExp | AddExp (&#x27;</span>+<span class="string">&#x27; | &#x27;</span>−<span class="string">&#x27;) MulExp</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">关系表达式 RelExp → AddExp | RelExp (&#x27;</span>&lt;<span class="string">&#x27; | &#x27;</span>&gt;<span class="string">&#x27; | &#x27;</span>&lt;=<span class="string">&#x27; | &#x27;</span>&gt;=<span class="string">&#x27;) AddExp</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">相等性表达式 EqExp → RelExp | EqExp (&#x27;</span>==<span class="string">&#x27; | &#x27;</span>!=<span class="string">&#x27;) RelExp</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">逻辑与表达式 LAndExp → EqExp | LAndExp &#x27;</span>&amp;&amp;<span class="string">&#x27; EqExp // a</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">逻辑或表达式 LOrExp → LAndExp | LOrExp &#x27;</span>||<span class="string">&#x27; LAndExp // a</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">常量表达式 ConstExp → AddExp 注：使用的 Ident 必须是常量</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="特别说明"><a href="#特别说明" class="headerlink" title="特别说明"></a>特别说明</h3><ol>
+<li>错误 <code>i, j, k</code> 类型中的“前一个非终结符”强调的是在文法规则里出现在 <code>;</code> <code>)</code> <code>]</code> 之前的非终结符号，在分析中处理的是该非终结符产生的终结符号串的最后一个符号，也就是 <code>;</code> <code>)</code> <code>]</code> 本应该正常出现的位置的上一个单词。</li>
+<li>所有错误都不会出现恶意换行的情况，包括字符、字符串中的换行符、函数调用等等。所谓恶意换行是指<strong>会使得错误处理难以正确进行的换行</strong>。</li>
+<li>其他类型的错误，错误的行号以能够断定发现出错的第一个符号的行号为准。例如有返回值的函数缺少返回语句的错误，只有当识别到函数末尾的 <code>&#125;</code> 时仍未出现返回语句，才可以断定出错，报错行号即为 <code>&#125;</code> 的行号。</li>
+<li>为了避免因为测试程序中的错误导致出现语法二义性，使得语法树以错误的方式建立，我们保证：<strong><code>for</code> 语句不会出现除了 <code>h</code> 类型以外的任何错误</strong>。进一步的，我们保证，<strong>所有会导致语法树不能正确建立的错误都不会出现</strong>。</li>
+<li>每一行中最多只有一个错误。</li>
+<li><strong>同一作用域下函数和变量之间不能有相同的名字</strong>。</li>
+<li>对于一个名字重定义的函数，也应该完整分析函数内部是否具有其它错误。</li>
+<li>对于调用函数时，参数类型不匹配一共有以下几种情况的不匹配：<ul>
+<li>传递数组给变量。</li>
+<li>传递变量给数组。</li>
+</ul>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Jiyuan Zhao</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E/">http://example.com/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF/">编译技术</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover8.JPG" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/01/19/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E6%9C%9F%E4%B8%AD%E6%9C%9F%E6%9C%AB%E9%A2%98%E7%9B%AE%E5%9B%9E%E9%A1%BE/" title="2025 北航编译原理期中期末题目回顾"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover7.JPG" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">2025 北航编译原理期中期末题目回顾</div></div><div class="info-2"><div class="info-item-1"> 本文章主要记录了2025秋季学期北航编译原理课程实验上机期中期末的回忆题目~ 题目均由本人回忆记录，可能与原题稍有偏差，但大体思路一致  期中题目1. 新增 elif 文法：具体新增文法如下： 123Stmt -&gt; &#x27;if&#x27; &#x27;(&#x27; Cond &#x27;)&#x27;Stmt 		&#123; &#x27;elif&#x27; &#x27;(&#x27; Cond &#x27;)&#x27; Stmt &#125; 1.有elif 2.无elif 3.有多个elif		[ &#x27;else&#x27; Stmt ] // 1.有else 2.无else  解题思路：  词法分析阶段识别 elif 为一个保留关键字，建立 ELIFTK。 语法分析阶段，对于 IfStmt 语法结构，新增一个 list 用来装 elif，里面每一个单元涵盖 Cond 和 Stmt。在 toString 的时候，先对 if 语句进行 toString，然后看有没有 elif，如果有的话就仿照 if 的 toString 操作去写就可以。最后对...</div></div></div></a><a class="pagination-related" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="2025-北航编译技术设计文档"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover5.JPG" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">2025-北航编译技术设计文档</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/01/19/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E6%9C%9F%E4%B8%AD%E6%9C%9F%E6%9C%AB%E9%A2%98%E7%9B%AE%E5%9B%9E%E9%A1%BE/" title="2025 北航编译原理期中期末题目回顾"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover7.JPG" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-19</div><div class="info-item-2">2025 北航编译原理期中期末题目回顾</div></div><div class="info-2"><div class="info-item-1"> 本文章主要记录了2025秋季学期北航编译原理课程实验上机期中期末的回忆题目~ 题目均由本人回忆记录，可能与原题稍有偏差，但大体思路一致  期中题目1. 新增 elif 文法：具体新增文法如下： 123Stmt -&gt; &#x27;if&#x27; &#x27;(&#x27; Cond &#x27;)&#x27;Stmt 		&#123; &#x27;elif&#x27; &#x27;(&#x27; Cond &#x27;)&#x27; Stmt &#125; 1.有elif 2.无elif 3.有多个elif		[ &#x27;else&#x27; Stmt ] // 1.有else 2.无else  解题思路：  词法分析阶段识别 elif 为一个保留关键字，建立 ELIFTK。 语法分析阶段，对于 IfStmt 语法结构，新增一个 list 用来装 elif，里面每一个单元涵盖 Cond 和 Stmt。在 toString 的时候，先对 if 语句进行 toString，然后看有没有 elif，如果有的话就仿照 if 的 toString 操作去写就可以。最后对...</div></div></div></a><a class="pagination-related" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="2025-北航编译技术设计文档"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover5.JPG" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-06</div><div class="info-item-2">2025-北航编译技术设计文档</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/%E5%BE%AE%E4%BF%A1%E5%A4%B4%E5%83%8F.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Jiyuan Zhao</div><div class="author-info-description">这里是keshi的博客网站，联系作者：zhaojiyuan0721</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">19</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lucky-sheltered-boy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lucky-sheltered-boy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:23371524@buaa.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#2025%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E"><span class="toc-number">1.</span> <span class="toc-text">2025编译技术实验文法定义及相关说明</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">一、概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E8%BF%90%E8%A1%8C%E6%97%B6%E5%BA%93"><span class="toc-number">1.2.</span> <span class="toc-text">二、运行时库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%96%87%E6%B3%95%E5%8F%8A%E6%B5%8B%E8%AF%95%E7%A8%8B%E5%BA%8F%E8%A6%86%E7%9B%96%E8%A6%81%E6%B1%82"><span class="toc-number">1.3.</span> <span class="toc-text">三、文法及测试程序覆盖要求</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%A6%86%E7%9B%96%E8%A6%81%E6%B1%82"><span class="toc-number">1.3.1.</span> <span class="toc-text">1. 覆盖要求</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%96%87%E6%B3%95"><span class="toc-number">1.4.</span> <span class="toc-text">2. 文法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%A1%A5%E5%85%85%E8%AF%B4%E6%98%8E"><span class="toc-number">1.5.</span> <span class="toc-text">3. 补充说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A0%87%E8%AF%86%E7%AC%A6-Ident"><span class="toc-number">1.5.1.</span> <span class="toc-text">(1) 标识符 Ident</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%B3%A8%E9%87%8A"><span class="toc-number">1.5.2.</span> <span class="toc-text">(2) 注释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%95%B0%E5%80%BC%E5%B8%B8%E9%87%8F"><span class="toc-number">1.5.3.</span> <span class="toc-text">(3) 数值常量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F"><span class="toc-number">1.5.4.</span> <span class="toc-text">(4) 字符串常量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%9A%BE%E5%BA%A6%E5%88%86%E7%BA%A7"><span class="toc-number">1.6.</span> <span class="toc-text">4. 难度分级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E8%AF%AD%E4%B9%89%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.7.</span> <span class="toc-text">四、语义约束</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6%E5%BA%93"><span class="toc-number">1.7.1.</span> <span class="toc-text">运行时库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#static-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">1.7.2.</span> <span class="toc-text">static 关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%8D%95%E5%85%83-CompUnit"><span class="toc-number">1.7.3.</span> <span class="toc-text">编译单元 CompUnit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E9%87%8F%E5%AE%9A%E4%B9%89-ConstDef"><span class="toc-number">1.7.4.</span> <span class="toc-text">常量定义 ConstDef</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E5%AE%9A%E4%B9%89-VarDef"><span class="toc-number">1.7.5.</span> <span class="toc-text">变量定义 VarDef</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%80%BC-ConstInitVal-InitVal"><span class="toc-number">1.7.6.</span> <span class="toc-text">初值 ConstInitVal &#x2F; InitVal</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E5%BD%A2%E5%8F%82-FuncFParam-%E4%B8%8E%E5%AE%9E%E5%8F%82-FuncRParams"><span class="toc-number">1.7.7.</span> <span class="toc-text">函数形参 FuncFParam 与实参 FuncRParams</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E5%AE%9A%E4%B9%89-FuncDef"><span class="toc-number">1.7.8.</span> <span class="toc-text">函数定义 FuncDef</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E5%8F%A5%E5%9D%97-Block"><span class="toc-number">1.7.9.</span> <span class="toc-text">语句块 Block</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E5%8F%A5-Stmt"><span class="toc-number">1.7.10.</span> <span class="toc-text">语句 Stmt</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A6%E5%80%BC-LVal"><span class="toc-number">1.7.11.</span> <span class="toc-text">左值 LVal</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exp-%E4%B8%8E-Cond"><span class="toc-number">1.7.12.</span> <span class="toc-text">Exp 与 Cond</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%85%83%E8%A1%A8%E8%BE%BE%E5%BC%8F-UnaryExp"><span class="toc-number">1.7.13.</span> <span class="toc-text">一元表达式 UnaryExp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E9%87%8F%E8%A1%A8%E8%BE%BE%E5%BC%8F-ConstExp"><span class="toc-number">1.7.14.</span> <span class="toc-text">常量表达式 ConstExp</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86"><span class="toc-number">1.8.</span> <span class="toc-text">六、错误处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E7%B1%BB%E5%9E%8B%E5%88%97%E8%A1%A8"><span class="toc-number">1.8.1.</span> <span class="toc-text">错误类型列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E8%BE%93%E5%87%BA%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.8.2.</span> <span class="toc-text">错误输出示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E6%B3%95%E7%AC%A6%E5%8F%B7%E4%B8%8E%E9%94%99%E8%AF%AF%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94"><span class="toc-number">1.8.3.</span> <span class="toc-text">文法符号与错误类型对应</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E5%88%AB%E8%AF%B4%E6%98%8E"><span class="toc-number">1.8.4.</span> <span class="toc-text">特别说明</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="2025-北航编译技术设计文档"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover5.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2025-北航编译技术设计文档"/></a><div class="content"><a class="title" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="2025-北航编译技术设计文档">2025-北航编译技术设计文档</a><time datetime="2026-02-05T17:42:59.000Z" title="Created 2026-02-06 01:42:59">2026-02-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E/" title="2025-北航编译技术实验文法定义及相关说明"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover8.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2025-北航编译技术实验文法定义及相关说明"/></a><div class="content"><a class="title" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E/" title="2025-北航编译技术实验文法定义及相关说明">2025-北航编译技术实验文法定义及相关说明</a><time datetime="2026-02-05T17:28:57.000Z" title="Created 2026-02-06 01:28:57">2026-02-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/19/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E6%9C%9F%E4%B8%AD%E6%9C%9F%E6%9C%AB%E9%A2%98%E7%9B%AE%E5%9B%9E%E9%A1%BE/" title="2025 北航编译原理期中期末题目回顾"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover7.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2025 北航编译原理期中期末题目回顾"/></a><div class="content"><a class="title" href="/2026/01/19/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E6%9C%9F%E4%B8%AD%E6%9C%9F%E6%9C%AB%E9%A2%98%E7%9B%AE%E5%9B%9E%E9%A1%BE/" title="2025 北航编译原理期中期末题目回顾">2025 北航编译原理期中期末题目回顾</a><time datetime="2026-01-19T07:21:54.000Z" title="Created 2026-01-19 15:21:54">2026-01-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/08/23/LLM-MoE-RL-%E5%AD%A6%E4%B9%A0%E6%8A%A5%E5%91%8A/" title="LLM MoE RL 学习报告"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover4.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LLM MoE RL 学习报告"/></a><div class="content"><a class="title" href="/2025/08/23/LLM-MoE-RL-%E5%AD%A6%E4%B9%A0%E6%8A%A5%E5%91%8A/" title="LLM MoE RL 学习报告">LLM MoE RL 学习报告</a><time datetime="2025-08-23T02:15:17.000Z" title="Created 2025-08-23 10:15:17">2025-08-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/01/%E5%8C%97%E8%88%AA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-lab6-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="北航操作系统-OS-lab6-实验报告"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover5.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="北航操作系统-OS-lab6-实验报告"/></a><div class="content"><a class="title" href="/2025/07/01/%E5%8C%97%E8%88%AA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-lab6-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="北航操作系统-OS-lab6-实验报告">北航操作系统-OS-lab6-实验报告</a><time datetime="2025-07-01T06:35:01.000Z" title="Created 2025-07-01 14:35:01">2025-07-01</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By Jiyuan Zhao</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light.<p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://butterfly.js.org/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script></div></body></html>
