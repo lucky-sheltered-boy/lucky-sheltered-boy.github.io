@@ -1,0 +1,267 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>2025-北航编译技术优化文章 | lucky-sheltered-boy's Blog</title><meta name="author" content="Jiyuan Zhao"><meta name="copyright" content="Jiyuan Zhao"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="对于优化，主要分为两个阶段的优化：中端和后端。中端对中间代码先进行优化，随后由后端生成目标代码，再由后端优化代码进行进一步的优化。 核心的优化工作主要集中在以下三个方面：  mem2reg：将内存变量提升为 SSA 寄存器形式，减少 load&#x2F;store 指令。 removePhi：将 Phi 指令转化为 Move 指令，以便后端 MIPS 翻译。 regAlloc：使用图着色算法进行寄">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-北航编译技术优化文章">
+<meta property="og:url" content="http://example.com/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E4%BC%98%E5%8C%96%E6%96%87%E7%AB%A0/index.html">
+<meta property="og:site_name" content="lucky-sheltered-boy&#39;s Blog">
+<meta property="og:description" content="对于优化，主要分为两个阶段的优化：中端和后端。中端对中间代码先进行优化，随后由后端生成目标代码，再由后端优化代码进行进一步的优化。 核心的优化工作主要集中在以下三个方面：  mem2reg：将内存变量提升为 SSA 寄存器形式，减少 load&#x2F;store 指令。 removePhi：将 Phi 指令转化为 Move 指令，以便后端 MIPS 翻译。 regAlloc：使用图着色算法进行寄">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover5.JPG">
+<meta property="article:published_time" content="2026-02-06T05:15:43.000Z">
+<meta property="article:modified_time" content="2026-02-06T05:16:13.692Z">
+<meta property="article:author" content="Jiyuan Zhao">
+<meta property="article:tag" content="编译技术">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover5.JPG"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "2025-北航编译技术优化文章",
+  "url": "http://example.com/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E4%BC%98%E5%8C%96%E6%96%87%E7%AB%A0/",
+  "image": "https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover5.JPG",
+  "datePublished": "2026-02-06T05:15:43.000Z",
+  "dateModified": "2026-02-06T05:16:13.692Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Jiyuan Zhao",
+      "url": "http://example.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E4%BC%98%E5%8C%96%E6%96%87%E7%AB%A0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2025-北航编译技术优化文章',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/%E5%BE%AE%E4%BF%A1%E5%A4%B4%E5%83%8F.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">20</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover5.JPG);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">lucky-sheltered-boy's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">2025-北航编译技术优化文章</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">2025-北航编译技术优化文章</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-02-06T05:15:43.000Z" title="Created 2026-02-06 13:15:43">2026-02-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-02-06T05:16:13.692Z" title="Updated 2026-02-06 13:16:13">2026-02-06</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF/">编译技术</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word Count:</span><span class="word-count">1.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading Time:</span><span>6mins</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>对于优化，主要分为两个阶段的优化：中端和后端。中端对中间代码先进行优化，随后由后端生成目标代码，再由后端优化代码进行进一步的优化。</p>
+<p>核心的优化工作主要集中在以下三个方面：</p>
+<ol>
+<li><strong>mem2reg</strong>：将内存变量提升为 SSA 寄存器形式，减少 load&#x2F;store 指令。</li>
+<li><strong>removePhi</strong>：将 Phi 指令转化为 Move 指令，以便后端 MIPS 翻译。</li>
+<li><strong>regAlloc</strong>：使用图着色算法进行寄存器分配。</li>
+</ol>
+<p>此外，为了支撑这些核心优化，还实现了一些基础的 Pass，如死代码删除、CFG 构建、支配关系分析等。</p>
+<h2 id="中端优化"><a href="#中端优化" class="headerlink" title="中端优化"></a>中端优化</h2><p>中端优化即机器无关优化，主要针对 LLVM IR 进行处理。</p>
+<h3 id="死代码删除"><a href="#死代码删除" class="headerlink" title="死代码删除"></a>死代码删除</h3><p>死代码删除分为两层：删除不可达基本块和删除无用指令。</p>
+<h4 id="删不可达基本块"><a href="#删不可达基本块" class="headerlink" title="删不可达基本块"></a>删不可达基本块</h4><p><code>SurplusBlock</code> 的实现基于图的可达性分析：从入口块出发进行 DFS，标记所有可达的块，最后将未被标记的块从函数中移除。同时，还需要清理跳转指令之后的无用指令。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从入口块开始DFS</span></span><br><span class="line">visited = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line">dfs(func.getEntryBlock());</span><br><span class="line"></span><br><span class="line"><span class="comment">// 移除未访问到的块</span></span><br><span class="line">func.getBasicBlocks().removeIf(block -&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (!visited.contains(block)) &#123;</span><br><span class="line">        block.getInstructions().forEach(Instruction::removeOperands);</span><br><span class="line">        block.removeOperands();</span><br><span class="line">        block.setDeleted(<span class="literal">true</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="删无用指令"><a href="#删无用指令" class="headerlink" title="删无用指令"></a>删无用指令</h4><p><code>CodeRemoval</code> 进行了两层过滤：</p>
+<ol>
+<li>直接删除无 User 且无副作用的指令。</li>
+<li>从有 User 指令出发计算依赖闭包，删除依赖链之外的指令。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 判断无user且无副作用</span></span><br><span class="line"><span class="keyword">if</span> (instruction.getUserList().isEmpty() &amp;&amp; !instruction.getName().isEmpty()) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!(instruction <span class="keyword">instanceof</span> CallInst)) &#123;</span><br><span class="line">        instruction.removeOperands();</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (instruction <span class="keyword">instanceof</span> CallInst callInst) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!callInst.getCalledFunction().hasSideEffects()) &#123;</span><br><span class="line">            instruction.removeOperands();</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="控制流与支配分析"><a href="#控制流与支配分析" class="headerlink" title="控制流与支配分析"></a>控制流与支配分析</h3><p>这一部分主要为了支撑 <code>mem2reg</code> 的实现。不同于复用对象，我选择在处理每个函数时直接计算这些关系并挂载到 <code>BasicBlock</code> 上。</p>
+<h4 id="CFG构建"><a href="#CFG构建" class="headerlink" title="CFG构建"></a>CFG构建</h4><p>CFG 的构建非常直接：检查每个基本块的最后一条 <code>BrInst</code>，根据跳转目标建立边。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (lastInstruction <span class="keyword">instanceof</span> BrInst brInst) &#123;</span><br><span class="line">    <span class="keyword">if</span> (brInst.isConditional()) &#123;</span><br><span class="line">        addEdge(block, brInst.getTrueBlock());</span><br><span class="line">        addEdge(block, brInst.getFalseBlock());</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        addEdge(block, brInst.getTrueBlock());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="支配集合与支配树"><a href="#支配集合与支配树" class="headerlink" title="支配集合与支配树"></a>支配集合与支配树</h4><p>支配集合的计算采用了“暴力”但稳健的方法：对于每个候选支配者 <code>d</code>，从入口做 DFS，若遇到 <code>d</code> 则停止。最后 DFS 无法到达的块即被 <code>d</code> 支配。</p>
+<p>直接支配者的选择则是从所有支配者中挑选最近的一个。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (BasicBlock dominator : currentFunction.getBasicBlocks()) &#123;</span><br><span class="line">    Set&lt;BasicBlock&gt; reachableBlocks = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line">    dfs(entry, dominator, reachableBlocks);</span><br><span class="line">    <span class="keyword">for</span> (BasicBlock block : currentFunction.getBasicBlocks()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!reachableBlocks.contains(block)) &#123;</span><br><span class="line">            dominates.get(dominator).add(block);</span><br><span class="line">            dominatedBy.get(block).add(dominator);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="支配边界"><a href="#支配边界" class="headerlink" title="支配边界"></a>支配边界</h4><p>支配边界的计算逻辑为：对于每个支配者，扫描其支配的块及其后继，若后继不被该支配者支配，则该后继为支配边界。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (BasicBlock dominated : dominator.getDominateBlocks()) &#123;</span><br><span class="line">    <span class="keyword">for</span> (BasicBlock child : dominated.getNextBlocks()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!dominator.getDominateBlocks().contains(child)) &#123;</span><br><span class="line">            frontier.add(child);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="mem2reg"><a href="#mem2reg" class="headerlink" title="mem2reg"></a>mem2reg</h3><p><code>mem2reg</code> 的目标是将局部变量提升为 SSA 形式，消除 <code>alloca</code>，并尽量用 SSA 值替换 <code>load</code>，将 <code>store</code> 转化为定义的压栈操作。</p>
+<h4 id="收集-def-use"><a href="#收集-def-use" class="headerlink" title="收集 def&#x2F;use"></a>收集 def&#x2F;use</h4><p>首先遍历 <code>alloca</code> 的 <code>userList</code>，将 <code>load</code> 记为 use，<code>store</code> 记为 def。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (instruction <span class="keyword">instanceof</span> LoadInst &amp;&amp; !instruction.getBasicBlock().isDeleted()) &#123;</span><br><span class="line">    useInstructions.add(instruction);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (instruction <span class="keyword">instanceof</span> StoreInst &amp;&amp; !instruction.getBasicBlock().isDeleted()) &#123;</span><br><span class="line">    defInstructions.add(instruction);</span><br><span class="line">    defBlocks.add(instruction.getBasicBlock());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="插入-phi-指令"><a href="#插入-phi-指令" class="headerlink" title="插入 phi 指令"></a>插入 phi 指令</h4><p>使用经典算法：从 <code>defBlocks</code> 开始，沿支配边界扩散，在遇到新块时插入 <code>PhiInst</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">HashSet&lt;BasicBlock&gt; F = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line">ArrayList&lt;BasicBlock&gt; W = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(defBlocks);</span><br><span class="line"><span class="keyword">while</span> (!W.isEmpty()) &#123;</span><br><span class="line">    <span class="type">BasicBlock</span> <span class="variable">X</span> <span class="operator">=</span> W.remove(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">for</span> (BasicBlock Y : X.getDominanceFrontier()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!F.contains(Y)) &#123;</span><br><span class="line">            <span class="type">PhiInst</span> <span class="variable">phiInst</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PhiInst</span>(currentAlloc.getTargetType(),</span><br><span class="line">                                          Y, <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(Y.getPrevBlocks()));</span><br><span class="line">            Y.getInstructions().add(<span class="number">0</span>, phiInst);</span><br><span class="line">            F.add(Y);</span><br><span class="line">            <span class="keyword">if</span> (!defBlocks.contains(Y)) &#123;</span><br><span class="line">                W.add(Y);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="变量重命名"><a href="#变量重命名" class="headerlink" title="变量重命名"></a>变量重命名</h4><p>重命名阶段维护一个 <code>defStack</code>，通过一次 DFS 完成：</p>
+<ol>
+<li><strong>Store</strong>：将值压栈，删除指令。</li>
+<li><strong>Load</strong>：用栈顶值替换，删除指令。</li>
+<li><strong>Phi</strong>：将 Phi 自身压栈，作为新定义。</li>
+<li><strong>Alloca</strong>：删除。</li>
+</ol>
+<p>在从当前块走向后继时，为后继的 Phi 填充来自当前块的 incoming value。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (instruction <span class="keyword">instanceof</span> PhiInst phiInst) &#123;</span><br><span class="line">    <span class="keyword">if</span> (useInstructions.contains(phiInst)) &#123;</span><br><span class="line">        <span class="type">Value</span> <span class="variable">value</span> <span class="operator">=</span> defStack.empty() ? <span class="keyword">new</span> <span class="title class_">Undefined</span>() : defStack.peek();</span><br><span class="line">        phiInst.addValue(block, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="后端优化"><a href="#后端优化" class="headerlink" title="后端优化"></a>后端优化</h2><p>后端优化主要包括 <code>removePhi</code> 和寄存器分配。</p>
+<h3 id="removePhi"><a href="#removePhi" class="headerlink" title="removePhi"></a>removePhi</h3><p>由于 MIPS 没有 Phi 指令，需要在生成代码前将 Phi 拆分为 <code>MoveInst</code>。</p>
+<h4 id="拆分流程"><a href="#拆分流程" class="headerlink" title="拆分流程"></a>拆分流程</h4><ol>
+<li><strong>清理与生成 Move</strong>：对每个前驱，生成 <code>MoveInst(to=phi, from=alt)</code>。</li>
+<li><strong>解决并行赋值</strong>：若 <code>to</code> 在后续被用作 <code>from</code>，引入临时变量中转。</li>
+<li><strong>解决寄存器覆盖</strong>：若 <code>to</code> 和 <code>from</code> 分配到了同一寄存器，同样使用临时变量。</li>
+<li><strong>插入 Move</strong>：<ul>
+<li>若前驱只有一个后继，直接插入。</li>
+<li>若前驱有多个后继，新建中间块插入 move 和跳转。</li>
+</ul>
+</li>
+</ol>
+<p>关键点在于处理多后继前驱时建立中间块，以保证语义正确。</p>
+<h3 id="寄存器分配"><a href="#寄存器分配" class="headerlink" title="寄存器分配"></a>寄存器分配</h3><p>寄存器分配采用了图着色算法，流程为：活跃变量分析 -&gt; 建干涉图 -&gt; 图着色。</p>
+<h4 id="活跃变量分析"><a href="#活跃变量分析" class="headerlink" title="活跃变量分析"></a>活跃变量分析</h4><p>计算每个基本块的 <code>use</code> 和 <code>def</code>，并迭代计算 <code>IN</code> 和 <code>OUT</code> 集合。特别注意 Phi 指令的 operand 应视为在前驱边上被使用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (changed) &#123;</span><br><span class="line">    changed = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> blocks.size() - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="comment">// ... 计算OUT集合，包含Phi的修正 ...</span></span><br><span class="line">        HashSet&lt;Value&gt; inSet = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;(outSet);</span><br><span class="line">        </span><br><span class="line">        inSet.removeAll(defMap.get(block));</span><br><span class="line">        inSet.addAll(useMap.get(block));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!inSet.equals(inMap.get(block))) &#123;</span><br><span class="line">            changed = <span class="literal">true</span>;</span><br><span class="line">            inMap.put(block, inSet);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="建干涉图"><a href="#建干涉图" class="headerlink" title="建干涉图"></a>建干涉图</h4><p>从后往前扫描指令，维护 live set。每遇到一个定义，就使其与当前 live set 中的所有变量建立干涉边。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">HashSet&lt;Value&gt; live = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;(outMap.get(block));</span><br><span class="line">ListIterator&lt;Instruction&gt; iterator = instructions.listIterator(instructions.size());</span><br><span class="line"><span class="keyword">while</span> (iterator.hasPrevious()) &#123;</span><br><span class="line">    <span class="type">Instruction</span> <span class="variable">instruction</span> <span class="operator">=</span> iterator.previous();</span><br><span class="line">    <span class="keyword">if</span> (!instruction.getName().isEmpty() &amp;&amp; !(instruction <span class="keyword">instanceof</span> ZextInst)) &#123;</span><br><span class="line">        live.remove(instruction);</span><br><span class="line">        <span class="type">InterferenceGraphNode</span> <span class="variable">nodeU</span> <span class="operator">=</span> getOrCreateNode(instruction);</span><br><span class="line">        <span class="keyword">for</span> (Value v : live) &#123;</span><br><span class="line">            addEdge(nodeU, getOrCreateNode(v));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ... 添加操作数到live set ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="图着色"><a href="#图着色" class="headerlink" title="图着色"></a>图着色</h4><p>采用 simplify&#x2F;spill&#x2F;select 步骤：</p>
+<ol>
+<li><strong>Simplify</strong>：反复移除度数 &lt; K 的节点压栈。</li>
+<li><strong>Spill</strong>：若无度数 &lt; K 的节点，选择度数最大的节点作为溢出候选压栈。</li>
+<li><strong>Select</strong>：出栈分配颜色，若无色可选则标记溢出。</li>
+</ol>
+<p>最终将分配结果记录在 <code>function.setVar2reg</code> 中，供后端代码生成使用。</p>
+<h2 id="优化总结"><a href="#优化总结" class="headerlink" title="优化总结"></a>优化总结</h2><p>整体的优化流水线如下：</p>
+<ol>
+<li><strong>中端</strong>：先进行死代码删除和 CFG 清理，再执行 <code>mem2reg</code>，最后进行局部优化。</li>
+<li><strong>后端</strong>：在生成 MIPS 前，依次执行 <code>ZextRemoval</code> -&gt; <code>RegAlloc</code> -&gt; <code>RemovePhi</code>。</li>
+<li><strong>窥孔</strong>：生成 MIPS 代码后，再进行一轮窥孔优化。</li>
+</ol>
+<p>这一顺序确保了 IR 在结构稳定后进行重优化，最后在目标代码层面进行局部调整。</p>
+<p>学习编译的过程中，经常会听到一句话，“相信编译器的力量”。</p>
+<p>相比于目前的成熟编译器，我的编译器还处于非常简陋的阶段，不过我已经很满意了。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Jiyuan Zhao</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E4%BC%98%E5%8C%96%E6%96%87%E7%AB%A0/">http://example.com/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E4%BC%98%E5%8C%96%E6%96%87%E7%AB%A0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF/">编译技术</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover5.JPG" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="2025-北航编译技术设计文档"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover8.JPG" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">2025-北航编译技术设计文档</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/01/19/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E6%9C%9F%E4%B8%AD%E6%9C%9F%E6%9C%AB%E9%A2%98%E7%9B%AE%E5%9B%9E%E9%A1%BE/" title="2025 北航编译原理期中期末题目回顾"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover1.JPG" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-19</div><div class="info-item-2">2025 北航编译原理期中期末题目回顾</div></div><div class="info-2"><div class="info-item-1"> 本文章主要记录了2025秋季学期北航编译原理课程实验上机期中期末的回忆题目~ 题目均由本人回忆记录，可能与原题稍有偏差，但大体思路一致  期中题目1. 新增 elif 文法：具体新增文法如下： 123Stmt -&gt; &#x27;if&#x27; &#x27;(&#x27; Cond &#x27;)&#x27;Stmt 		&#123; &#x27;elif&#x27; &#x27;(&#x27; Cond &#x27;)&#x27; Stmt &#125; 1.有elif 2.无elif 3.有多个elif		[ &#x27;else&#x27; Stmt ] // 1.有else 2.无else  解题思路：  词法分析阶段识别 elif 为一个保留关键字，建立 ELIFTK。 语法分析阶段，对于 IfStmt 语法结构，新增一个 list 用来装 elif，里面每一个单元涵盖 Cond 和 Stmt。在 toString 的时候，先对 if 语句进行 toString，然后看有没有 elif，如果有的话就仿照 if 的 toString 操作去写就可以。最后对...</div></div></div></a><a class="pagination-related" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="2025-北航编译技术设计文档"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover8.JPG" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-06</div><div class="info-item-2">2025-北航编译技术设计文档</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a><a class="pagination-related" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E/" title="2025-北航编译技术实验文法定义及相关说明"><img class="cover" src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover2.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-06</div><div class="info-item-2">2025-北航编译技术实验文法定义及相关说明</div></div><div class="info-2"><div class="info-item-1"> 知识产权声明：以下内容由北航编译技术课程组提供，并非本人创作，本人只负责搬运，有任何问题请以课程组为准！！！  2025编译技术实验文法定义及相关说明一、概要SysY 语言是编译技术实验所完成的编译器的源语言，是 C 语言的一个子集。一个 SysY 语言源程序文件中有且仅有一个名为 main 的主函数定义，除此之外包含若干全局变量声明、常量声明和其他函数定义。SysY 语言支持 32 位有符号数 int 类型及其的一维数组类型；const 修饰符用于声明常量。 SysY 语言本身没有提供输入&#x2F;输出(I&#x2F;O)的语言构造，I&#x2F;O 是以运行时库方式提供，库函数可以在 SysY 程序中的函数内调用。部分 SysY 运行时库函数的参数类型会超出 SysY 支持的数据类型，如可以为字符串。SysY 编译器需要能处理这种情况，将 SysY 程序中这样的参数正确地传递给 SysY 运行时库。  函数：函数可以带参数也可以不带参数，参数的类型可以是 int 或其一维数组类型；函数可以返回 int 类型的值，或者不返回值（即声明为 void 类型）。当参数为 int...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/%E5%BE%AE%E4%BF%A1%E5%A4%B4%E5%83%8F.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Jiyuan Zhao</div><div class="author-info-description">这里是keshi的博客网站，联系作者：zhaojiyuan0721</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">20</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lucky-sheltered-boy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lucky-sheltered-boy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:23371524@buaa.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E7%AB%AF%E4%BC%98%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">中端优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%BB%E4%BB%A3%E7%A0%81%E5%88%A0%E9%99%A4"><span class="toc-number">1.1.</span> <span class="toc-text">死代码删除</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E4%B8%8D%E5%8F%AF%E8%BE%BE%E5%9F%BA%E6%9C%AC%E5%9D%97"><span class="toc-number">1.1.1.</span> <span class="toc-text">删不可达基本块</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E6%97%A0%E7%94%A8%E6%8C%87%E4%BB%A4"><span class="toc-number">1.1.2.</span> <span class="toc-text">删无用指令</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E6%B5%81%E4%B8%8E%E6%94%AF%E9%85%8D%E5%88%86%E6%9E%90"><span class="toc-number">1.2.</span> <span class="toc-text">控制流与支配分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CFG%E6%9E%84%E5%BB%BA"><span class="toc-number">1.2.1.</span> <span class="toc-text">CFG构建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%AF%E9%85%8D%E9%9B%86%E5%90%88%E4%B8%8E%E6%94%AF%E9%85%8D%E6%A0%91"><span class="toc-number">1.2.2.</span> <span class="toc-text">支配集合与支配树</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%AF%E9%85%8D%E8%BE%B9%E7%95%8C"><span class="toc-number">1.2.3.</span> <span class="toc-text">支配边界</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mem2reg"><span class="toc-number">1.3.</span> <span class="toc-text">mem2reg</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%B6%E9%9B%86-def-use"><span class="toc-number">1.3.1.</span> <span class="toc-text">收集 def&#x2F;use</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8F%92%E5%85%A5-phi-%E6%8C%87%E4%BB%A4"><span class="toc-number">1.3.2.</span> <span class="toc-text">插入 phi 指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E9%87%8D%E5%91%BD%E5%90%8D"><span class="toc-number">1.3.3.</span> <span class="toc-text">变量重命名</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%AB%AF%E4%BC%98%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">后端优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#removePhi"><span class="toc-number">2.1.</span> <span class="toc-text">removePhi</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8B%86%E5%88%86%E6%B5%81%E7%A8%8B"><span class="toc-number">2.1.1.</span> <span class="toc-text">拆分流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8%E5%88%86%E9%85%8D"><span class="toc-number">2.2.</span> <span class="toc-text">寄存器分配</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B4%BB%E8%B7%83%E5%8F%98%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">2.2.1.</span> <span class="toc-text">活跃变量分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BB%BA%E5%B9%B2%E6%B6%89%E5%9B%BE"><span class="toc-number">2.2.2.</span> <span class="toc-text">建干涉图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BE%E7%9D%80%E8%89%B2"><span class="toc-number">2.2.3.</span> <span class="toc-text">图着色</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">优化总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E4%BC%98%E5%8C%96%E6%96%87%E7%AB%A0/" title="2025-北航编译技术优化文章"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover5.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2025-北航编译技术优化文章"/></a><div class="content"><a class="title" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E4%BC%98%E5%8C%96%E6%96%87%E7%AB%A0/" title="2025-北航编译技术优化文章">2025-北航编译技术优化文章</a><time datetime="2026-02-06T05:15:43.000Z" title="Created 2026-02-06 13:15:43">2026-02-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="2025-北航编译技术设计文档"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover8.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2025-北航编译技术设计文档"/></a><div class="content"><a class="title" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="2025-北航编译技术设计文档">2025-北航编译技术设计文档</a><time datetime="2026-02-05T17:42:59.000Z" title="Created 2026-02-06 01:42:59">2026-02-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E/" title="2025-北航编译技术实验文法定义及相关说明"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2025-北航编译技术实验文法定义及相关说明"/></a><div class="content"><a class="title" href="/2026/02/06/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E5%AE%9E%E9%AA%8C%E6%96%87%E6%B3%95%E5%AE%9A%E4%B9%89%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E/" title="2025-北航编译技术实验文法定义及相关说明">2025-北航编译技术实验文法定义及相关说明</a><time datetime="2026-02-05T17:28:57.000Z" title="Created 2026-02-06 01:28:57">2026-02-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/19/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E6%9C%9F%E4%B8%AD%E6%9C%9F%E6%9C%AB%E9%A2%98%E7%9B%AE%E5%9B%9E%E9%A1%BE/" title="2025 北航编译原理期中期末题目回顾"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover1.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2025 北航编译原理期中期末题目回顾"/></a><div class="content"><a class="title" href="/2026/01/19/2025-%E5%8C%97%E8%88%AA%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E6%9C%9F%E4%B8%AD%E6%9C%9F%E6%9C%AB%E9%A2%98%E7%9B%AE%E5%9B%9E%E9%A1%BE/" title="2025 北航编译原理期中期末题目回顾">2025 北航编译原理期中期末题目回顾</a><time datetime="2026-01-19T07:21:54.000Z" title="Created 2026-01-19 15:21:54">2026-01-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/08/23/LLM-MoE-RL-%E5%AD%A6%E4%B9%A0%E6%8A%A5%E5%91%8A/" title="LLM MoE RL 学习报告"><img src="https://cdn.jsdelivr.net/gh/Justlovesmile/CDN2/post/cover7.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LLM MoE RL 学习报告"/></a><div class="content"><a class="title" href="/2025/08/23/LLM-MoE-RL-%E5%AD%A6%E4%B9%A0%E6%8A%A5%E5%91%8A/" title="LLM MoE RL 学习报告">LLM MoE RL 学习报告</a><time datetime="2025-08-23T02:15:17.000Z" title="Created 2025-08-23 10:15:17">2025-08-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By Jiyuan Zhao</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light.<p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://butterfly.js.org/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
